@@ -1,23 +1,35 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import Button from 'antd/lib/button';
 import './App.css';
+import { Tabs, Icon } from 'antd';
+
+const TabPane = Tabs.TabPane;
+
 
 class App extends Component {
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-            To get started, edit <code>src/App.js</code> and save to reload.
-            <Button type="primary">Button</Button>
-        </p>
-      </div>
+            <Tabs defaultActiveKey="1">
+            <TabPane tab={<span>General</span>} key="1">
+            Tab 1
+            </TabPane>
+            <TabPane tab={<span><Icon type="github" />Github</span>} key="2">
+            Tab 2
+        </TabPane>
+            <TabPane tab={<span><Icon type="youtube" />Youtube</span>} key="3">
+            Tab 3
+        </TabPane>
+            <TabPane tab={<span><Icon type="twitter" />Twitter</span>} key="4">
+            Tab 4
+        </TabPane>
+            </Tabs>
+       </div>
     );
   }
 }
+    <Icon type="github" />
+
+
 
 export default App;
