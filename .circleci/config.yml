@@ -22,7 +22,13 @@ jobs:
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
 
-      - run: yarn install
+      - run:
+          name: "Install deps for test"
+          command: |
+            cd test/sanity
+            yarn install
+
+
 
       - save_cache:
           paths:
@@ -30,7 +36,11 @@ jobs:
           key: v1-dependencies-{{ checksum "react_extension/package.json" }}
 
       # run tests!
-      - run: yarn test
+      - run:
+          name: "Test"
+          command: |
+            cd test/sanity
+            yarn test
 
 workflows:
   version: 2
