@@ -3,12 +3,12 @@ jobs:
   build:
     docker:
       - image: circleci/node:7.10
-    working_directory: react_extension
     steps:
       - checkout
       - restore_cache:
           key: v1-dependencies-{{ checksum "package.json" }}
       - run:
+          working_directory: react_extension
           name: "Install deps for test"
           command: yarn install
       - save_cache:
@@ -16,6 +16,7 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
       - run:
+          working_directory: react_extension
           name: "Test"
           command: yarn test
 
