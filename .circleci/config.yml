@@ -6,17 +6,15 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          working_directory: react_extension
-          key: v1-dependencies-{{ checksum "package.json" }}
+          key: v1-dependencies-{{ checksum "react_extension/package.json" }}
       - run:
           working_directory: react_extension
           name: "Install deps for test"
           command: yarn install
       - save_cache:
-          working_directory: react_extension
           paths:
             - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
+          key: v1-dependencies-{{ checksum "react_extension/package.json" }}
       - run:
           working_directory: react_extension
           name: "Test"
