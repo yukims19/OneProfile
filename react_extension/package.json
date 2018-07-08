@@ -6,6 +6,7 @@
     "antd": "^3.6.5",
     "apollo-boost": "^0.1.10",
     "graphql": "^0.13.2",
+    "onegraph-auth": "^0.2.3",
     "react": "^16.4.1",
     "react-apollo": "^2.1.0-beta.3",
     "react-dom": "^16.4.1",
