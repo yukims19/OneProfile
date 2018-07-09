@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-//import Button from 'antd/lib/button';
 import './App.css';
 import { Tabs, Icon } from 'antd';
 import {gql} from 'apollo-boost';
@@ -38,6 +37,24 @@ const GET_GeneralInfo = gql`
       name
     }
   }
+search:eventil {
+    user(hackernews:"sgrove") {
+      profile {
+        description
+        hackernews
+        location
+        linkedin
+        twitter
+        website
+        reddit
+        gender
+        github
+      }
+      name
+      id
+    }
+  }
+
 }
 `;
 
@@ -52,8 +69,9 @@ class GeneralInfo extends Component{
                     return (
                             <div>
                             We fetched a YouTube video with title:
-                        {data.me.eventil}
-                        </div>
+                        {data.me.eventil.name}
+
+                            </div>
                     );
                 }}
             </Query>
@@ -61,6 +79,19 @@ class GeneralInfo extends Component{
     }
 }
 
+class LoginButton extends Component{
+    render(){
+        return(
+                <button
+            className={"loginbtn loginbtn-"+ this.props.eventClass}
+            onClick={()=>this.props.onClick}>
+                <i className={"fab fa-"+this.props.eventClass}></i>
+                <span>  </span>Login with {this.props.event}
+            </button>
+        )
+    }
+
+}
 
 class App extends Component {
     constructor(props){
@@ -113,32 +144,40 @@ class App extends Component {
             console.error('Problem logging in', e);
         }
     }
+    renderButton(eventTitle, eventClass){
+        return(
+            <LoginButton
+        event= {eventTitle}
+        eventClass= {eventClass}
+            onClick={()=>this.handleClick(eventClass)} />
+        );
+    }
 
     render() {
-        var eventil_content = <button className="loginbtn loginbtn-eventil" onClick={()=>this.handleClick("eventil")}><i className="fab fa-github"></i> Login with Eventil</button>;
-        var github_content = <button className="loginbtn loginbtn-github" onClick={()=>this.handleClick("github")}><i className="fab fa-github"></i> Login with GitHub</button>;
-        var youtube_content = <button className="loginbtn loginbtn-youtube" onClick={()=>this.handleClick("youtube")}><i className="fab fa-youtube"></i> Login with Youtube</button>;
-        var twitter_content = <button className="loginbtn loginbtn-twitter" onClick={()=>this.handleClick("twitter")}><i className="fab fa-twitter"></i> Login with Twitter</button>;
+        var eventil_content;
+        var github_content;
+        var youtube_content;
+        var twitter_content;
 
         if(this.state.eventil){
             eventil_content = "eventil content";
         }else{
-            eventil_content = <button className="loginbtn loginbtn-eventil" onClick={()=>this.handleClick("eventil")}><i className="fab fa-github"></i> Login with GitHub</button>;
+            eventil_content = this.renderButton("Eventil", "eventil");
         }
         if(this.state.github){
             github_content = "content";
         }else{
-            github_content = <button className="loginbtn loginbtn-github" onClick={()=>this.handleClick("github")}><i className="fab fa-github"></i> Login with GitHub</button>;
+            github_content = this.renderButton("Github", "github");
         }
         if(this.state.youtube){
             youtube_content = "content";
         }else{
-            youtube_content = <button className="loginbtn loginbtn-youtube" onClick={()=>this.handleClick("youtube")}><i className="fab fa-youtube"></i> Login with Youtube</button>;
+            youtube_content = this.renderButton("YouTube", "youtube");
         }
         if(this.state.twitter){
             twitter_content = "content";
         }else{
-            twitter_content = <button className="loginbtn loginbtn-twitter" onClick={()=>this.handleClick("twitter")}><i className="fab fa-twitter"></i> Login with Twitter</button>;
+            twitter_content = this.renderButton("Twitter", "twitter");
         }
 
     return (
