@@ -108,7 +108,7 @@ class LoginButton extends Component{
         return(
                 <button
             className={"loginbtn loginbtn-"+ this.props.eventClass}
-            onClick={()=>this.props.onClick}>
+            onClick={this.props.onClick}>
                 <i className={"fab fa-"+this.props.eventClass}></i>
                 <span>  </span>Login with {this.props.event}
             </button>
@@ -125,25 +125,16 @@ class App extends Component {
             github: false,
             youtube: false,
             twitter: false,
-            };
-        auth.isLoggedIn('eventil').then(isLoggedIn => {
+        };
+        this.isLoggedIn('eventil');
+        this.isLoggedIn('github');
+        this.isLoggedIn('youtube');
+        this.isLoggedIn('twitter');
+    }
+    isLoggedIn(event){
+        auth.isLoggedIn(event).then(isLoggedIn => {
             this.setState({
-                eventil: isLoggedIn
-            })
-        });
-        auth.isLoggedIn('github').then(isLoggedIn => {
-            this.setState({
-                github: isLoggedIn
-            })
-        });
-        auth.isLoggedIn('youtube').then(isLoggedIn => {
-            this.setState({
-                youtube: isLoggedIn
-            })
-        });
-        auth.isLoggedIn('twitter').then(isLoggedIn => {
-            this.setState({
-                twitter: isLoggedIn
+                [event]: isLoggedIn
             })
         });
     }
