@@ -37,7 +37,7 @@ const GET_GeneralInfo = gql`
       name
     }
   }
-search:eventil {
+  eventil {
     user(hackernews:"sgrove") {
       profile {
         description
@@ -58,19 +58,43 @@ search:eventil {
 }
 `;
 
-class GeneralInfo extends Component{
+class EventilInfo extends Component{
     render(){
         return(
                 <Query query={GET_GeneralInfo}>
                 {({loading, error, data}) => {
-                    console.log(data.me);
+                    console.log(data.eventil);
+
                     if (loading) return <div>Loading...</div>;
                     if (error) return <div>Uh oh, something went wrong!</div>;
                     return (
                             <div>
-                            We fetched a YouTube video with title:
-                        {data.me.eventil.name}
-
+                            <div className="container">
+                            <div className="row">
+                            <div className="col-md-4">
+                            Image
+                        </div>
+                            <div className="col-md-8">
+                            <h4>{data.eventil.user.name}</h4>
+                            <small><cite title={data.eventil.user.profile.location}>{data.eventil.user.profile.location} <i className="fas fa-map-marker-alt">
+                            </i></cite></small>
+                            <p>
+                            <i className="fas fa-envelope"></i> email@example.com
+                            <br />
+                            <i className="fas fa-globe"></i><a href="#"> {data.eventil.user.profile.website}</a>
+                            <br />
+                            <i className="fab fa-github-square"></i><a href="#"> {data.eventil.user.profile.github}</a>
+                            <br />
+                            <i className="fab fa-twitter-square"></i><a href="#"> {data.eventil.user.profile.twitter}</a>
+                            <br />
+                            <i className="fab fa-reddit-square"></i><a href="#"> {data.eventil.user.profile.reddit}</a>
+                            <br />
+                            <i className="fab fa-linkedin"></i><a href="#"> {data.eventil.user.profile.linkedin}</a>
+                            <br />
+                            </p>
+                            </div>
+                            </div>
+                            </div>
                             </div>
                     );
                 }}
@@ -160,7 +184,7 @@ class App extends Component {
         var twitter_content;
 
         if(this.state.eventil){
-            eventil_content = "eventil content";
+            eventil_content = <ApolloProvider client={client}><EventilInfo /></ApolloProvider>;
         }else{
             eventil_content = this.renderButton("Eventil", "eventil");
         }
@@ -185,9 +209,6 @@ class App extends Component {
             <Tabs defaultActiveKey="1">
             <TabPane tab={<span>General</span>} key="1">
             <div className="tab-content" id="general-content">
-            <ApolloProvider client={client}>
-            <GeneralInfo />
-            </ApolloProvider>
             {eventil_content}
             </div>
             </TabPane>
