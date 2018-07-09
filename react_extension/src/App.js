@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Button from 'antd/lib/button';
+//import Button from 'antd/lib/button';
 import './App.css';
 import { Tabs, Icon } from 'antd';
 import {gql} from 'apollo-boost';
@@ -7,6 +7,7 @@ import {ApolloClient} from 'apollo-client';
 import {HttpLink} from 'apollo-link-http';
 import {InMemoryCache} from 'apollo-cache-inmemory';
 import {ApolloProvider, Query} from 'react-apollo';
+import OneGraphApolloClient from 'onegraph-apollo-client';
 import OneGraphAuth from 'onegraph-auth';
 
 const TabPane = Tabs.TabPane;
@@ -16,6 +17,7 @@ const auth = new OneGraphAuth({
 });
 const APP_ID = 'e3d209d1-0c66-4603-8d9e-ca949f99506d';
 
+/*
 const client = new ApolloClient({
     link: new HttpLink({
         uri: 'https://serve.onegraph.com/dynamic?app_id=' + APP_ID,
@@ -24,42 +26,56 @@ const client = new ApolloClient({
     }),
     cache: new InMemoryCache(),
 });
+*/
+const client = new OneGraphApolloClient({
+    oneGraphAuth: auth,
+});
 
-const GET_VIDEO = gql`
-  query {
-    youTubeVideo(id: "t6CRZ-iG39g") {
-      snippet {
-        title
-        description
-      }
+const GET_GeneralInfo = gql`
+  query{
+  me {
+    eventil {
+      name
     }
   }
+}
 `;
 
-const GeneralInfo = () => (
-        <Query query={GET_VIDEO}>
-        {({loading, error, data}) => {
-            if (loading) return <div>Loading...</div>;
-            if (error) return <div>Uh oh, something went wrong!</div>;
-            return (
-                    <div>
-                    We fetched a YouTube video with title:{' '}
-                {data.youTubeVideo}
-                </div>
-            );
-        }}
-    </Query>
-);
+class GeneralInfo extends Component{
+    render(){
+        return(
+                <Query query={GET_GeneralInfo}>
+                {({loading, error, data}) => {
+                    console.log(data.me);
+                    if (loading) return <div>Loading...</div>;
+                    if (error) return <div>Uh oh, something went wrong!</div>;
+                    return (
+                            <div>
+                            We fetched a YouTube video with title:
+                        {data.me.eventil}
+                        </div>
+                    );
+                }}
+            </Query>
+        )
+    }
+}
+
 
 class App extends Component {
     constructor(props){
         super(props);
         this.state = {
+            eventil: false,
             github: false,
             youtube: false,
             twitter: false,
             };
-
+        auth.isLoggedIn('eventil').then(isLoggedIn => {
+            this.setState({
+                eventil: isLoggedIn
+            })
+        });
         auth.isLoggedIn('github').then(isLoggedIn => {
             this.setState({
                 github: isLoggedIn
@@ -97,18 +113,24 @@ class App extends Component {
             console.error('Problem logging in', e);
         }
     }
+
     render() {
+        var eventil_content = <button className="loginbtn loginbtn-eventil" onClick={()=>this.handleClick("eventil")}><i className="fab fa-github"></i> Login with Eventil</button>;
         var github_content = <button className="loginbtn loginbtn-github" onClick={()=>this.handleClick("github")}><i className="fab fa-github"></i> Login with GitHub</button>;
         var youtube_content = <button className="loginbtn loginbtn-youtube" onClick={()=>this.handleClick("youtube")}><i className="fab fa-youtube"></i> Login with Youtube</button>;
         var twitter_content = <button className="loginbtn loginbtn-twitter" onClick={()=>this.handleClick("twitter")}><i className="fab fa-twitter"></i> Login with Twitter</button>;
 
+        if(this.state.eventil){
+            eventil_content = "eventil content";
+        }else{
+            eventil_content = <button className="loginbtn loginbtn-eventil" onClick={()=>this.handleClick("eventil")}><i className="fab fa-github"></i> Login with GitHub</button>;
+        }
         if(this.state.github){
             github_content = "content";
         }else{
             github_content = <button className="loginbtn loginbtn-github" onClick={()=>this.handleClick("github")}><i className="fab fa-github"></i> Login with GitHub</button>;
         }
         if(this.state.youtube){
-            console.log("yes?")
             youtube_content = "content";
         }else{
             youtube_content = <button className="loginbtn loginbtn-youtube" onClick={()=>this.handleClick("youtube")}><i className="fab fa-youtube"></i> Login with Youtube</button>;
@@ -127,6 +149,7 @@ class App extends Component {
             <ApolloProvider client={client}>
             <GeneralInfo />
             </ApolloProvider>
+            {eventil_content}
             </div>
             </TabPane>
             <TabPane tab={<span><Icon type="github" />Github</span>} key="2">
