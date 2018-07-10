@@ -11,6 +11,51 @@
 #general-content .col-md-8{
     text-align: left;
 }
+#general-content img{
+    width: 100%;
+    border-radius: 50%;
+}
+#general-content h4{
+    margin-bottom: 0px;
+}
+#general-content p{
+    margin-top: 1rem;
+}
+#general-content .info-list{
+    font-size: 16px;
+}
+
+@media screen and (max-width: 768px){
+    #general-content img{
+        width: 200px;
+    }
+    #general-content .col-md-8{
+        text-align: center;
+    }
+}
+
+#github-content .card{
+    text-align: left;
+//    width: 320px;
+    height: 170px;
+    margin: 10px;
+}
+
+#github-content .card h5 a{
+    color: #0366d6;
+}
+#github-content .card h5 a:hover{
+    text-decoration: underline;
+}
+#github-content .card-bottom{
+    position: absolute;
+    bottom: 20px;
+    margin-bottom: 0px;
+}
+#github-content .card-bottom div{
+    display: inline-block;
+    margin-right: 10px;
+}
 
 /*Buttons*/
 .loginbtn{
