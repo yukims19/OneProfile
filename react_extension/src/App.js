@@ -14,6 +14,7 @@ const TabPane = Tabs.TabPane;
 const auth = new OneGraphAuth({
     appId: 'e3d209d1-0c66-4603-8d9e-ca949f99506d',
 });
+
 const APP_ID = 'e3d209d1-0c66-4603-8d9e-ca949f99506d';
 
 /*
@@ -30,7 +31,7 @@ const client = new OneGraphApolloClient({
     oneGraphAuth: auth,
 });
 
-const GET_GeneralInfo = gql`
+const GET_Query = gql`
   query{
   me {
     eventil {
@@ -49,37 +50,134 @@ const GET_GeneralInfo = gql`
         reddit
         gender
         github
+        gitHubUser {
+            id
+            bio
+            avatarUrl
+            company
+            email
+            url
+            repositories (first: 6, orderBy:{direction:DESC, field:UPDATED_AT}){
+                  nodes {
+                       description
+                       url
+                       name
+                       forks{
+                             totalCount
+                       }
+                       stargazers{
+                             totalCount
+                       }
+                       languages(first: 1, orderBy:{field:SIZE, direction:DESC}) {
+                             edges {
+                             size
+                             node {
+                             color
+                             name
+                             }
+                             }
+                       }
+
+             }
+            totalDiskUsage
+            totalCount
+        }
+      }
       }
       name
       id
     }
   }
+  gitHub {
+    user(login: "sgrove") {
+      repositories (first: 5, orderBy:{direction:DESC, field:NAME}){
+        nodes {
+          description
+          url
+          name
+        }
+        totalDiskUsage
+        totalCount
+      }
+    }
+  }
+
 
 }
 `;
 
-class EventilInfo extends Component{
+class GithubInfo extends Component{
     render(){
         return(
-                <Query query={GET_GeneralInfo}>
+                <Query query={GET_Query}>
                 {({loading, error, data}) => {
-                    console.log(data.eventil);
+
 
                     if (loading) return <div>Loading...</div>;
                     if (error) return <div>Uh oh, something went wrong!</div>;
+                    console.log(data.eventil.user.profile.gitHubUser.repositories.nodes);
+                    console.log(data.eventil.user.profile.gitHubUser.repositories.nodes[0].languages.edges[0].node.name);
                     return (
                             <div>
                             <div className="container">
                             <div className="row">
+                            {data.eventil.user.profile.gitHubUser.repositories.nodes.map((item)=>{
+                                return(
+                                        <div className="col-md-6">
+                                        <div className="card">
+                                        <div className="card-body">
+                                        <h5 className="card-title"><a href={item.url}>{item.name}</a></h5>
+                                        <p className="card-text">{item.description}</p>
+                                        <p className="card-bottom">
+                                        {(item.languages.edges[0])?
+                                         <div><i className="fas fa-circle" style={{color: item.languages.edges[0].node.color}}></i>{item.languages.edges[0].node.name}</div> : " "
+                                        }
+                                    {(item.stargazers)?
+                                     <div><i className="fas fa-star"></i>{item.stargazers.totalCount}</div> : " "
+                                    }
+                                    {(item.forks)?
+                                     <div><i className="fas fa-code-branch"></i>{item.forks.totalCount}</div> : " "
+                                    }
+                                    </p>
+                                        </div>
+                                        </div>
+                                        </div>)
+                            })}
+                            </div>
+                            </div>
+                            </div>
+                    );
+                }}
+            </Query>
+        )
+    }
+}
+
+class EventilInfo extends Component{
+    render(){
+        return(
+                <Query query={GET_Query}>
+                {({loading, error, data}) => {
+                    if (loading) return <div>Loading...</div>;
+                    if (error) return <div>Uh oh, something went wrong!</div>;
+                    return (
+                            <div>
+GithubInfo
+                            <div className="container">
+                            <div className="row">
                             <div className="col-md-4">
-                            Image
-                        </div>
+                            <img src={data.eventil.user.profile.gitHubUser.avatarUrl} />
+                            </div>
                             <div className="col-md-8">
                             <h4>{data.eventil.user.name}</h4>
+                            {data.eventil.user.profile.gitHubUser.company}<br />
                             <small><cite title={data.eventil.user.profile.location}>{data.eventil.user.profile.location} <i className="fas fa-map-marker-alt">
                             </i></cite></small>
                             <p>
-                            <i className="fas fa-envelope"></i> email@example.com
+                            {data.eventil.user.profile.description}
+                            </p>
+                            <p className="info-list">
+                            <i className="fas fa-envelope"></i> {data.eventil.user.profile.gitHubUser.email}
                             <br />
                             <i className="fas fa-globe"></i><a href="#"> {data.eventil.user.profile.website}</a>
                             <br />
@@ -180,7 +278,7 @@ class App extends Component {
             eventil_content = this.renderButton("Eventil", "eventil");
         }
         if(this.state.github){
-            github_content = "content";
+            github_content = <ApolloProvider client={client}><GithubInfo /></ApolloProvider>;
         }else{
             github_content = this.renderButton("Github", "github");
         }
