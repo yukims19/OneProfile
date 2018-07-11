@@ -40,12 +40,36 @@ const GET_Query = gql`
   }
   eventil {
     user(hackernews:"sgrove") {
+      presentations {
+        video_url
+        youtubeVideo {
+          id
+        }
+      }
       profile {
         description
         hackernews
         location
         linkedin
         twitter
+         twitterTimeline {
+          tweets {
+            user {
+              screenName
+              name
+            }
+            entities {
+              urls
+            }
+            favoriteCount
+            video {
+              id
+            }
+            createdAt
+            text
+            idStr
+          }
+        }
         website
         reddit
         gender
@@ -57,6 +81,13 @@ const GET_Query = gql`
             company
             email
             url
+            login
+            followers{
+                 totalCount
+                 }
+            following{
+                 totalCount
+            }
             repositories (first: 6, orderBy:{direction:DESC, field:UPDATED_AT}){
                   nodes {
                        description
@@ -106,6 +137,97 @@ const GET_Query = gql`
 }
 `;
 
+class TwitterInfo extends Component{
+    render(){
+        return(
+                <Query query={GET_Query}>
+                {({loading, error, data}) => {
+                    if (loading) return <div>Loading...</div>;
+                    if (error) return <div>Uh oh, something went wrong!</div>;
+                    return (
+                            <div>
+                        {data.eventil.user.profile.twitterTimeline.tweets.map((item)=>{
+                                return(
+                                        <div className="card">
+                                        <div className="card-body">
+                                        <img src={data.eventil.user.profile.gitHubUser.avatarUrl
+                                                 /*Need to replace with twitter avatarUrl*/} />
+                                        <div className="names">
+                                        <h5 className="card-title"><a href={"https://twitter.com/"+item.user.screenName}>{item.user.name}</a></h5>
+                                        <p>@{item.user.screenName}</p>
+                                        </div>
+                                        <a href={"https://twitter.com/"+item.user.screenName+"/status/"+item.idStr}><i className="fab fa-twitter twittericon"></i></a>
+                                        <p className="card-text">{item.text}<br/>
+                                        <span>{(item.createdAt.split(" ")[3].split(":")[0] > 12)?
+                                               (item.createdAt.split(" ")[3].split(":")[0]-12 +":"+item.createdAt.split(" ")[3].split(":")[1]+" PM"):
+                                               (item.createdAt.split(" ")[3].split(":").slice(0,2).join(":")+" AM")
+
+                                              }</span>
+                                        <span>{" - "+item.createdAt.split(" ").slice(1,3).join(" ")+" "+item.createdAt.split(" ")[item.createdAt.split(" ").length-1]}</span>
+                                        </p>
+                                        <div className="card-bottom">
+                                        <p><i className="fas fa-heart"></i> {item.favoriteCount}</p>
+                                    </div>
+                                        </div>
+                                        </div>
+                                )
+                            })}
+                            </div>
+                    );
+                }}
+            </Query>
+        )
+    }
+}
+/*
+  <div>
+                            TwitterInfo
+                        {data.eventil.user.profile.twitterTimeline.tweets.map((item)=>{
+                                return(
+                                        <div className="card">
+                                        <div className="card-body">
+                                        <h5 className="card-title">{item.user.name}</h5>
+                                        <p>@{item.user.screenName}</p>
+                                        <p className="card-text">{item.text}<br/>
+                                        {item.createdAt}
+                                        </p>
+                                        <div className="card-bottom">
+                                        <p><i className="fas fa-heart"></i>{item.favoriteCount}</p>
+                                    </div>
+                                        </div>
+                                        </div>
+                                )
+                            })}
+                            </div>
+                            */
+
+class YoutubeInfo extends Component{
+    render(){
+        return(
+                <Query query={GET_Query}>
+                {({loading, error, data}) => {
+                    if (loading) return <div>Loading...</div>;
+                    if (error) return <div>Uh oh, something went wrong!</div>;
+                    return (
+                            <div>
+                            {data.eventil.user.presentations.map((item)=>{
+                                return(
+                                    <div>
+                                    {(item.youtubeVideo)?
+                                        <iframe src={"http://www.youtube.com/embed/"+item.youtubeVideo.id}
+                                     width="560" height="315"></iframe>:" "
+                                    }
+                                    </div>
+                                )
+                            })}
+                            </div>
+                    );
+                }}
+            </Query>
+        )
+    }
+}
+
 class GithubInfo extends Component{
     render(){
         return(
@@ -115,11 +237,27 @@ class GithubInfo extends Component{
 
                     if (loading) return <div>Loading...</div>;
                     if (error) return <div>Uh oh, something went wrong!</div>;
-                    console.log(data.eventil.user.profile.gitHubUser.repositories.nodes);
+                    console.log(data.eventil.user.profile.gitHubUser);
                     console.log(data.eventil.user.profile.gitHubUser.repositories.nodes[0].languages.edges[0].node.name);
                     return (
                             <div>
                             <div className="container">
+                            <div className="row">
+                            <div className="col-md-2">
+                            <img src={data.eventil.user.profile.gitHubUser.avatarUrl} />
+                            </div>
+                            <div className="col-md-4 user-info">
+                            <h4>{data.eventil.user.profile.gitHubUser.login}</h4>
+                            <p className="info-list">
+                            Total Repositories: {data.eventil.user.profile.gitHubUser.totalCount}
+                            <br />
+                            Following: {data.eventil.user.profile.gitHubUser.following.totalCount}
+                            <br />
+                            Follwer: {data.eventil.user.profile.gitHubUser.followers.totalCount}
+                            <br />
+                            </p>
+                            </div>
+                            </div>
                             <div className="row">
                             {data.eventil.user.profile.gitHubUser.repositories.nodes.map((item)=>{
                                 return(
@@ -128,17 +266,17 @@ class GithubInfo extends Component{
                                         <div className="card-body">
                                         <h5 className="card-title"><a href={item.url}>{item.name}</a></h5>
                                         <p className="card-text">{item.description}</p>
-                                        <p className="card-bottom">
+                                        <div className="card-bottom">
                                         {(item.languages.edges[0])?
-                                         <div><i className="fas fa-circle" style={{color: item.languages.edges[0].node.color}}></i>{item.languages.edges[0].node.name}</div> : " "
+                                         <p><i className="fas fa-circle" style={{color: item.languages.edges[0].node.color}}></i>{item.languages.edges[0].node.name}</p> : " "
                                         }
                                     {(item.stargazers)?
-                                     <div><i className="fas fa-star"></i>{item.stargazers.totalCount}</div> : " "
+                                     <p><i className="fas fa-star"></i>{item.stargazers.totalCount}</p> : " "
                                     }
                                     {(item.forks)?
-                                     <div><i className="fas fa-code-branch"></i>{item.forks.totalCount}</div> : " "
+                                     <p><i className="fas fa-code-branch"></i>{item.forks.totalCount}</p> : " "
                                     }
-                                    </p>
+                                    </div>
                                         </div>
                                         </div>
                                         </div>)
@@ -162,7 +300,6 @@ class EventilInfo extends Component{
                     if (error) return <div>Uh oh, something went wrong!</div>;
                     return (
                             <div>
-GithubInfo
                             <div className="container">
                             <div className="row">
                             <div className="col-md-4">
@@ -283,12 +420,12 @@ class App extends Component {
             github_content = this.renderButton("Github", "github");
         }
         if(this.state.youtube){
-            youtube_content = "content";
+            youtube_content = <ApolloProvider client={client}><YoutubeInfo /></ApolloProvider>;
         }else{
             youtube_content = this.renderButton("YouTube", "youtube");
         }
         if(this.state.twitter){
-            twitter_content = "content";
+            twitter_content = <ApolloProvider client={client}><TwitterInfo /></ApolloProvider>;
         }else{
             twitter_content = this.renderButton("Twitter", "twitter");
         }

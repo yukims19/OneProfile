@@ -40,6 +40,15 @@
     height: 170px;
     margin: 10px;
 }
+#github-content img{
+    width: 100%;
+    margin: 10px;
+    border-radius: 5px;
+}
+#github-content .user-info{
+    text-align: left;
+    padding: 10px;
+}
 
 #github-content .card h5 a{
     color: #0366d6;
@@ -52,11 +61,49 @@
     bottom: 20px;
     margin-bottom: 0px;
 }
-#github-content .card-bottom div{
+#github-content .card-bottom p{
     display: inline-block;
     margin-right: 10px;
 }
 
+#youtube-content iframe{
+    margin: 20px;
+}
+
+#twitter-content .card{
+    max-width: 500px;
+    text-align: left;
+    margin: auto;
+    margin-top: 20px;
+}
+#twitter-content .card-title{
+    margin: 0px;
+}
+#twitter-content img{
+    height: 50px;
+    border-radius: 50%;
+    position: relative;
+    top: -10px;
+    margin-right: 10px;
+}
+#twitter-content img, #twitter-content .names, #twitter-content .twittericon{
+    display: inline-block;
+}
+#twitter-content .twittericon{
+    position: absolute;
+    right: 1.25rem;
+    color: #2b7bb9;
+}
+#twitter-content .card-text span{
+    color: grey;
+}
+#twitter-content .card h5 a{
+    color: black;
+}
+#twitter-content .card h5 a:hover{
+    text-decoration: underline;
+    color: #0366d6;
+}
 /*Buttons*/
 .loginbtn{
     border-radius: 3px;
