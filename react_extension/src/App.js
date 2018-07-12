@@ -31,35 +31,24 @@ const client = new OneGraphApolloClient({
     oneGraphAuth: auth,
 });
 
-const GET_Query = gql`
-  query{
-  me {
-    eventil {
-      name
-    }
-  }
+const GET_TwitterQuery = gql`
+query {
   eventil {
-    user(hackernews:"sgrove") {
-      presentations {
-        video_url
-        youtubeVideo {
-          id
-        }
-      }
+    user(github: "sgrove") {
       profile {
-        description
-        hackernews
-        location
-        linkedin
-        twitter
-         twitterTimeline {
+        gitHubUser {
+          avatarUrl
+        }
+        twitterTimeline {
           tweets {
             user {
               screenName
               name
             }
             entities {
-              urls
+              urls {
+                url
+              }
             }
             favoriteCount
             video {
@@ -70,77 +59,16 @@ const GET_Query = gql`
             idStr
           }
         }
-        website
-        reddit
-        gender
-        github
-        gitHubUser {
-            id
-            bio
-            avatarUrl
-            company
-            email
-            url
-            login
-            followers{
-                 totalCount
-                 }
-            following{
-                 totalCount
-            }
-            repositories (first: 6, orderBy:{direction:DESC, field:UPDATED_AT}){
-                  nodes {
-                       description
-                       url
-                       name
-                       forks{
-                             totalCount
-                       }
-                       stargazers{
-                             totalCount
-                       }
-                       languages(first: 1, orderBy:{field:SIZE, direction:DESC}) {
-                             edges {
-                             size
-                             node {
-                             color
-                             name
-                             }
-                             }
-                       }
-
-             }
-            totalDiskUsage
-            totalCount
-        }
-      }
-      }
-      name
-      id
-    }
-  }
-  gitHub {
-    user(login: "sgrove") {
-      repositories (first: 5, orderBy:{direction:DESC, field:NAME}){
-        nodes {
-          description
-          url
-          name
-        }
-        totalDiskUsage
-        totalCount
       }
     }
   }
-
-
 }
 `;
 
 class TwitterInfo extends Component{
     render(){
         return(
-                <Query query={GET_Query}>
+                <Query query={GET_TwitterQuery}>
                 {({loading, error, data}) => {
                     if (loading) return <div>Loading...</div>;
                     if (error) return <div>Uh oh, something went wrong!</div>;
@@ -179,32 +107,26 @@ class TwitterInfo extends Component{
         )
     }
 }
-/*
-  <div>
-                            TwitterInfo
-                        {data.eventil.user.profile.twitterTimeline.tweets.map((item)=>{
-                                return(
-                                        <div className="card">
-                                        <div className="card-body">
-                                        <h5 className="card-title">{item.user.name}</h5>
-                                        <p>@{item.user.screenName}</p>
-                                        <p className="card-text">{item.text}<br/>
-                                        {item.createdAt}
-                                        </p>
-                                        <div className="card-bottom">
-                                        <p><i className="fas fa-heart"></i>{item.favoriteCount}</p>
-                                    </div>
-                                        </div>
-                                        </div>
-                                )
-                            })}
-                            </div>
-                            */
+
+const GET_YoutubeQuery = gql`
+query {
+  eventil {
+    user(github: "sgrove") {
+      presentations {
+        video_url
+        youtubeVideo {
+          id
+        }
+      }
+    }
+  }
+}
+`;
 
 class YoutubeInfo extends Component{
     render(){
         return(
-                <Query query={GET_Query}>
+                <Query query={GET_YoutubeQuery}>
                 {({loading, error, data}) => {
                     if (loading) return <div>Loading...</div>;
                     if (error) return <div>Uh oh, something went wrong!</div>;
@@ -228,17 +150,68 @@ class YoutubeInfo extends Component{
     }
 }
 
+const GET_GithubQuery = gql`
+query {
+    eventil {
+        user(hackernews: "sgrove") {
+            id
+            profile {
+                id
+                gitHubUser {
+                    id
+                    avatarUrl
+                    url
+                    login
+                    followers {
+                        totalCount
+                    }
+                    following {
+                        totalCount
+                    }
+                    repositories(
+                        first: 6
+                        orderBy: { direction: DESC, field: UPDATED_AT }
+                    ) {
+                        nodes {
+                            id
+                            description
+                            url
+                            name
+                            forks {
+                                totalCount
+                            }
+                            stargazers {
+                                totalCount
+                            }
+                            languages(first: 1, orderBy: { field: SIZE, direction: DESC }) {
+                                edges {
+                                    size
+                                    node {
+                                        id
+                                        color
+                                        name
+                                    }
+                                }
+                            }
+                        }
+                        totalCount
+                    }
+                }
+            }
+        }
+    }
+}
+`;
+
 class GithubInfo extends Component{
     render(){
         return(
-                <Query query={GET_Query}>
+                <Query query={GET_GithubQuery}>
                 {({loading, error, data}) => {
-
-
                     if (loading) return <div>Loading...</div>;
-                    if (error) return <div>Uh oh, something went wrong!</div>;
-                    console.log(data.eventil.user.profile.gitHubUser);
-                    console.log(data.eventil.user.profile.gitHubUser.repositories.nodes[0].languages.edges[0].node.name);
+                    if (error) {
+                        console.log(error);
+                        return <div>Uh oh, something went wrong!</div>};
                     return (
                             <div>
                             <div className="container">
@@ -291,10 +264,40 @@ class GithubInfo extends Component{
     }
 }
 
+const GET_GeneralQuery = gql`
+query {
+  eventil {
+    user(hackernews: "sgrove") {
+      profile {
+        description
+        hackernews
+        location
+        linkedin
+        twitter
+        website
+        reddit
+        gender
+        github
+        gitHubUser {
+          id
+          bio
+          avatarUrl
+          company
+          email
+          url
+          login
+        }
+      }
+      name
+      id
+    }
+  }
+}
+`;
 class EventilInfo extends Component{
     render(){
         return(
-                <Query query={GET_Query}>
+                <Query query={GET_GeneralQuery}>
                 {({loading, error, data}) => {
                     if (loading) return <div>Loading...</div>;
                     if (error) return <div>Uh oh, something went wrong!</div>;
@@ -316,15 +319,15 @@ class EventilInfo extends Component{
                             <p className="info-list">
                             <i className="fas fa-envelope"></i> {data.eventil.user.profile.gitHubUser.email}
                             <br />
-                            <i className="fas fa-globe"></i><a href="#"> {data.eventil.user.profile.website}</a>
+                            <i className="fas fa-globe"></i> {data.eventil.user.profile.website}
                             <br />
-                            <i className="fab fa-github-square"></i><a href="#"> {data.eventil.user.profile.github}</a>
+                            <i className="fab fa-github-square"></i> {data.eventil.user.profile.github}
                             <br />
-                            <i className="fab fa-twitter-square"></i><a href="#"> {data.eventil.user.profile.twitter}</a>
+                            <i className="fab fa-twitter-square"></i> {data.eventil.user.profile.twitter}
                             <br />
-                            <i className="fab fa-reddit-square"></i><a href="#"> {data.eventil.user.profile.reddit}</a>
+                            <i className="fab fa-reddit-square"></i> {data.eventil.user.profile.reddit}
                             <br />
-                            <i className="fab fa-linkedin"></i><a href="#"> {data.eventil.user.profile.linkedin}</a>
+                            <i className="fab fa-linkedin"></i> {data.eventil.user.profile.linkedin}
                             <br />
                             </p>
                             </div>
