@@ -13,6 +13,7 @@ const TabPane = Tabs.TabPane;
 
 const auth = new OneGraphAuth({
     appId: 'e3d209d1-0c66-4603-8d9e-ca949f99506d',
+    oauthFinishPath: "/index.html",
 });
 
 const APP_ID = 'e3d209d1-0c66-4603-8d9e-ca949f99506d';
