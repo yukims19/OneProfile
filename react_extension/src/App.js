@@ -19,7 +19,7 @@ const auth = new OneGraphAuth({
 
 const APP_ID = 'e3d209d1-0c66-4603-8d9e-ca949f99506d';
 const URL = window.location.href;
-const USER = URL.split("?")[1].split("=")[1];
+const USER = "sgrove";//URL.split("?")[1].split("=")[1];
 const tempuser = "sgrove";
 
 /*
@@ -40,17 +40,24 @@ const GET_TwitterQuery = gql`
 query ($USER: String!){
   eventil {
     user(hackernews: $USER, github: $USER, twitter: $USER, reddit: $USER) {
+      id
       profile {
+        id
         gitHubUser {
+          id
           avatarUrl
         }
         twitterTimeline {
+          id
           tweets {
+            id
             user {
+              id
               screenName
               name
             }
             entities {
+              id
               urls {
                 url
               }
@@ -76,7 +83,9 @@ class TwitterInfo extends Component{
                 <Query query={GET_TwitterQuery}  variables = {{USER}}>
                 {({loading, error, data}) => {
                     if (loading) return <div>Loading...</div>;
-                    if (error) return <div>Uh oh, something went wrong!</div>;
+                    if (error) {
+                        console.log(error);
+                        return <div>Uh oh, something went wrong!</div>;}
                     if (!idx(data, _ => _.eventil.user.profile)) return <div>No Data Found for {USER}</div>;
                     return (
                             <div>
@@ -118,7 +127,9 @@ const GET_YoutubeQuery = gql`
 query ($USER: String!){
   eventil {
     user(hackernews: $USER, github: $USER, twitter: $USER, reddit: $USER) {
+      id
       presentations {
+        id
         video_url
         youtubeVideo {
           id
@@ -135,7 +146,9 @@ class YoutubeInfo extends Component{
                 <Query query={GET_YoutubeQuery}  variables = {{USER}}>
                 {({loading, error, data}) => {
                     if (loading) return <div>Loading...</div>;
-                    if (error) return <div>Uh oh, something went wrong!</div>;
+                    if (error) {
+                        console.log(error);
+                        return <div>Uh oh, something went wrong!</div>;}
                     if (!idx(data, _ => _.eventil.user.presentations)) return <div>No Data Found for {USER}</div>;
                     return (
                             <div>
