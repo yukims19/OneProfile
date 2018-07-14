@@ -8,6 +8,7 @@ import {InMemoryCache} from 'apollo-cache-inmemory';
 import {ApolloProvider, Query} from 'react-apollo';
 import OneGraphApolloClient from 'onegraph-apollo-client';
 import OneGraphAuth from 'onegraph-auth';
+import idx from 'idx';
 
 const TabPane = Tabs.TabPane;
 
@@ -17,6 +18,9 @@ const auth = new OneGraphAuth({
 });
 
 const APP_ID = 'e3d209d1-0c66-4603-8d9e-ca949f99506d';
+const URL = window.location.href;
+const USER = URL.split("?")[1].split("=")[1];
+const tempuser = "sgrove";
 
 /*
 const client = new ApolloClient({
@@ -33,9 +37,9 @@ const client = new OneGraphApolloClient({
 });
 
 const GET_TwitterQuery = gql`
-query {
+query ($USER: String!){
   eventil {
-    user(github: "sgrove") {
+    user(hackernews: $USER, github: $USER, twitter: $USER, reddit: $USER) {
       profile {
         gitHubUser {
           avatarUrl
@@ -69,10 +73,11 @@ query {
 class TwitterInfo extends Component{
     render(){
         return(
-                <Query query={GET_TwitterQuery}>
+                <Query query={GET_TwitterQuery}  variables = {{USER}}>
                 {({loading, error, data}) => {
                     if (loading) return <div>Loading...</div>;
                     if (error) return <div>Uh oh, something went wrong!</div>;
+                    if (!idx(data, _ => _.eventil.user.profile)) return <div>No Data Found for {USER}</div>;
                     return (
                             <div>
                         {data.eventil.user.profile.twitterTimeline.tweets.map((item)=>{
@@ -110,9 +115,9 @@ class TwitterInfo extends Component{
 }
 
 const GET_YoutubeQuery = gql`
-query {
+query ($USER: String!){
   eventil {
-    user(github: "sgrove") {
+    user(hackernews: $USER, github: $USER, twitter: $USER, reddit: $USER) {
       presentations {
         video_url
         youtubeVideo {
@@ -127,10 +132,11 @@ query {
 class YoutubeInfo extends Component{
     render(){
         return(
-                <Query query={GET_YoutubeQuery}>
+                <Query query={GET_YoutubeQuery}  variables = {{USER}}>
                 {({loading, error, data}) => {
                     if (loading) return <div>Loading...</div>;
                     if (error) return <div>Uh oh, something went wrong!</div>;
+                    if (!idx(data, _ => _.eventil.user.presentations)) return <div>No Data Found for {USER}</div>;
                     return (
                             <div>
                             {data.eventil.user.presentations.map((item)=>{
@@ -152,9 +158,9 @@ class YoutubeInfo extends Component{
 }
 
 const GET_GithubQuery = gql`
-query {
+query($USER: String!) {
     eventil {
-        user(hackernews: "sgrove") {
+        user(hackernews: $USER, github: $USER, twitter: $USER, reddit: $USER) {
             id
             profile {
                 id
@@ -207,33 +213,34 @@ query {
 class GithubInfo extends Component{
     render(){
         return(
-                <Query query={GET_GithubQuery}>
+                <Query query={GET_GithubQuery}  variables = {{USER}}>
                 {({loading, error, data}) => {
                     if (loading) return <div>Loading...</div>;
                     if (error) {
                         console.log(error);
                         return <div>Uh oh, something went wrong!</div>};
+                    if (!idx(data, _ => _.eventil.user.profile)) return <div>No Data Found for {USER}</div>;
                     return (
                             <div>
                             <div className="container">
                             <div className="row">
                             <div className="col-md-2">
-                            <img src={data.eventil.user.profile.gitHubUser.avatarUrl} />
+                            <img src={idx(data, _ => _.eventil.user.profile.gitHubUser.avatarUrl)} />
                             </div>
                             <div className="col-md-4 user-info">
-                            <h4>{data.eventil.user.profile.gitHubUser.login}</h4>
+                            <h4>{idx(data, _ => _.eventil.user.profile.gitHubUser.login)}</h4>
                             <p className="info-list">
-                            Total Repositories: {data.eventil.user.profile.gitHubUser.totalCount}
+                            Total Repositories: {idx(data, _ => _.eventil.user.profile.gitHubUser.totalCount)}
                             <br />
-                            Following: {data.eventil.user.profile.gitHubUser.following.totalCount}
+                            Following: {idx(data, _ => _.eventil.user.profile.gitHubUser.following.totalCount)}
                             <br />
-                            Follwer: {data.eventil.user.profile.gitHubUser.followers.totalCount}
+                            Follwer: {idx(data, _ => _.eventil.user.profile.gitHubUser.followers.totalCount)}
                             <br />
                             </p>
                             </div>
                             </div>
                             <div className="row">
-                            {data.eventil.user.profile.gitHubUser.repositories.nodes.map((item)=>{
+                            {idx(data, _ => _.eventil.user.profile.gitHubUser.repositories.nodes).map((item)=>{
                                 return(
                                         <div className="col-md-6">
                                         <div className="card">
@@ -266,10 +273,11 @@ class GithubInfo extends Component{
 }
 
 const GET_GeneralQuery = gql`
-query {
+query ($USER: String!){
   eventil {
-    user(hackernews: "sgrove") {
+    user (hackernews: $USER, github: $USER, twitter: $USER, reddit: $USER) {
       profile {
+        avatar
         description
         hackernews
         location
@@ -281,12 +289,8 @@ query {
         github
         gitHubUser {
           id
-          bio
-          avatarUrl
           company
           email
-          url
-          login
         }
       }
       name
@@ -298,37 +302,38 @@ query {
 class EventilInfo extends Component{
     render(){
         return(
-                <Query query={GET_GeneralQuery}>
+                <Query query={GET_GeneralQuery} variables = {{USER}}>
                 {({loading, error, data}) => {
                     if (loading) return <div>Loading...</div>;
                     if (error) return <div>Uh oh, something went wrong!</div>;
+                    if (!idx(data, _ => _.eventil.user.profile)) return <div>No Data Found for {USER}</div>;
                     return (
                             <div>
                             <div className="container">
                             <div className="row">
                             <div className="col-md-4">
-                            <img src={data.eventil.user.profile.gitHubUser.avatarUrl} />
+                            <img src={idx(data, _ => _.eventil.user.profile.avatar)} />
                             </div>
                             <div className="col-md-8">
-                            <h4>{data.eventil.user.name}</h4>
-                            {data.eventil.user.profile.gitHubUser.company}<br />
-                            <small><cite title={data.eventil.user.profile.location}>{data.eventil.user.profile.location} <i className="fas fa-map-marker-alt">
+                            <h4>{idx(data, _ => _.eventil.user.name)}</h4>
+                            {idx(data, _ => _.eventil.user.profile.gitHubUser.company)}<br />
+                            <small><cite title={idx(data, _ => _.eventil.user.profile.location)}>{idx(data, _ => _.eventil.user.profile.location)} <i className="fas fa-map-marker-alt">
                             </i></cite></small>
                             <p>
-                            {data.eventil.user.profile.description}
+                            {idx(data, _ => _.eventil.user.profile.description)}
                             </p>
                             <p className="info-list">
-                            <i className="fas fa-envelope"></i> {data.eventil.user.profile.gitHubUser.email}
+                            <i className="fas fa-envelope"></i> {idx(data, _ => _.eventil.user.profile.gitHubUser.email)}
                             <br />
-                            <i className="fas fa-globe"></i> {data.eventil.user.profile.website}
+                            <i className="fas fa-globe"></i> {idx(data, _ => _.eventil.user.profile.website)}
                             <br />
-                            <i className="fab fa-github-square"></i> {data.eventil.user.profile.github}
+                            <i className="fab fa-github-square"></i> {idx(data, _ => _.eventil.user.profile.github)}
                             <br />
-                            <i className="fab fa-twitter-square"></i> {data.eventil.user.profile.twitter}
+                            <i className="fab fa-twitter-square"></i> {idx(data, _ => _.eventil.user.profile.twitter)}
                             <br />
-                            <i className="fab fa-reddit-square"></i> {data.eventil.user.profile.reddit}
+                            <i className="fab fa-reddit-square"></i> {idx(data, _ => _.eventil.user.profile.reddit)}
                             <br />
-                            <i className="fab fa-linkedin"></i> {data.eventil.user.profile.linkedin}
+                            <i className="fab fa-linkedin"></i> {idx(data, _ => _.eventil.user.profile.linkedin)}
                             <br />
                             </p>
                             </div>
@@ -442,19 +447,20 @@ class App extends Component {
             {eventil_content}
             </div>
             </TabPane>
-            <TabPane tab={<span><Icon type="github" />Github</span>} key="2">
+            <TabPane tab={<span><Icon type="github" />Github</span>}   key="2">
             <div className="tab-content" id="github-content">
-            {github_content}
+            {(this.state.eventil)?  github_content:eventil_content}
+
             </div>
         </TabPane>
             <TabPane tab={<span><Icon type="youtube" />Youtube</span>} key="3">
             <div className="tab-content" id="youtube-content">
-            {youtube_content}
+            {(this.state.eventil)?  youtube_content:eventil_content}
             </div>
         </TabPane>
             <TabPane tab={<span><Icon type="twitter" />Twitter</span>} key="4">
             <div className="tab-content" id="twitter-content">
-            {twitter_content}
+        {(this.state.eventil)?  twitter_content:eventil_content}
             </div>
         </TabPane>
             </Tabs>
