@@ -135,3 +135,9 @@
 .loginbtn-youtube:hover{
     background: rgb(216, 54, 40);
 }
+.loginbtn-eventil{
+    background: rgb(51, 51, 51);
+}
+.loginbtn-eventil:hover{
+    background: rgb(85, 85, 85);
+}
