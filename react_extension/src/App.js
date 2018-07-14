@@ -238,10 +238,10 @@ class GithubInfo extends Component{
                             <div className="container">
                             <div className="row">
                             <div className="col-md-2">
-                            <img src={idx(data, _ => _.eventil.user.profile.gitHubUser.avatarUrl)} />
+                            <a href={idx(data, _ => _.eventil.user.profile.gitHubUser.url)}> <img src={idx(data, _ => _.eventil.user.profile.gitHubUser.avatarUrl)} /></a>
                             </div>
                             <div className="col-md-4 user-info">
-                            <h4>{idx(data, _ => _.eventil.user.profile.gitHubUser.login)}</h4>
+                            <h4><a href={idx(data, _ => _.eventil.user.profile.gitHubUser.url)}>{idx(data, _ => _.eventil.user.profile.gitHubUser.login)}</a></h4>
                             <p className="info-list">
                             Total Repositories: {idx(data, _ => _.eventil.user.profile.gitHubUser.totalCount)}
                             <br />
@@ -338,7 +338,7 @@ class EventilInfo extends Component{
                             <p className="info-list">
                             <i className="fas fa-envelope"></i> {idx(data, _ => _.eventil.user.profile.gitHubUser.email)}
                             <br />
-                            <i className="fas fa-globe"></i> {idx(data, _ => _.eventil.user.profile.website)}
+                            <i className="fas fa-globe"></i> <a href= {idx(data, _ => _.eventil.user.profile.website)}>{idx(data, _ => _.eventil.user.profile.website)}</a>
                             <br />
                             <i className="fab fa-github-square"></i> {idx(data, _ => _.eventil.user.profile.github)}
                             <br />

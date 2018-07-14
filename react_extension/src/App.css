@@ -49,6 +49,13 @@
     text-align: left;
     padding: 10px;
 }
+#github-content .user-info h4 a{
+    color: black;
+}
+#github-content .user-info h4 a:hover{
+    text-decoration: underline;
+    color: #0366d6;
+}
 
 #github-content .card h5 a{
     color: #0366d6;
