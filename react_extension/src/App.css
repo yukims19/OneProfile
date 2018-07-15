@@ -3,3 +3,148 @@
 .App {
   text-align: center;
 }
+.tab-content{
+    width: 60%;
+    left: 20%;
+    position: relative;
+}
+#general-content .col-md-8{
+    text-align: left;
+}
+#general-content img{
+    width: 100%;
+    border-radius: 50%;
+}
+#general-content h4{
+    margin-bottom: 0px;
+}
+#general-content p{
+    margin-top: 1rem;
+}
+#general-content .info-list{
+    font-size: 16px;
+}
+
+@media screen and (max-width: 768px){
+    #general-content img{
+        width: 200px;
+    }
+    #general-content .col-md-8{
+        text-align: center;
+    }
+}
+
+#github-content .card{
+    text-align: left;
+//    width: 320px;
+    height: 170px;
+    margin: 10px;
+}
+#github-content img{
+    width: 100%;
+    margin: 10px;
+    border-radius: 5px;
+}
+#github-content .user-info{
+    text-align: left;
+    padding: 10px;
+}
+#github-content .user-info h4 a{
+    color: black;
+}
+#github-content .user-info h4 a:hover{
+    text-decoration: underline;
+    color: #0366d6;
+}
+
+#github-content .card h5 a{
+    color: #0366d6;
+}
+#github-content .card h5 a:hover{
+    text-decoration: underline;
+}
+#github-content .card-bottom{
+    position: absolute;
+    bottom: 20px;
+    margin-bottom: 0px;
+}
+#github-content .card-bottom p{
+    display: inline-block;
+    margin-right: 10px;
+}
+
+#youtube-content iframe{
+    margin: 20px;
+}
+
+#twitter-content .card{
+    max-width: 500px;
+    text-align: left;
+    margin: auto;
+    margin-top: 20px;
+}
+#twitter-content .card-title{
+    margin: 0px;
+}
+#twitter-content img{
+    height: 50px;
+    border-radius: 50%;
+    position: relative;
+    top: -10px;
+    margin-right: 10px;
+}
+#twitter-content img, #twitter-content .names, #twitter-content .twittericon{
+    display: inline-block;
+}
+#twitter-content .twittericon{
+    position: absolute;
+    right: 1.25rem;
+    color: #2b7bb9;
+}
+#twitter-content .card-text span{
+    color: grey;
+}
+#twitter-content .card h5 a{
+    color: black;
+}
+#twitter-content .card h5 a:hover{
+    text-decoration: underline;
+    color: #0366d6;
+}
+/*Buttons*/
+.loginbtn{
+    border-radius: 3px;
+    box-shadow: rgba(0, 0, 0, 0.5) 0px 1px 2px;
+    color: rgb(255, 255, 255);
+    cursor: pointer;
+    font-size: 19px;
+    margin: 5px;
+    overflow: hidden;
+    padding: 0px 10px;
+    user-select: none;
+    height: 50px;
+}
+.loginbtn-twitter{
+    background: rgb(90, 164, 235);
+}
+.loginbtn-twitter:hover{
+    background: rgb(59, 130, 218);
+}
+.loginbtn-github{
+    background: rgb(51, 51, 51);
+}
+.loginbtn-github:hover{
+    background: rgb(85, 85, 85);
+}
+.loginbtn-youtube{
+    background: rgb(216, 54, 40);
+}
+.loginbtn-youtube:hover{
+    background: rgb(216, 54, 40);
+}
+.loginbtn-eventil{
+    background: rgb(51, 51, 51);
+}
+.loginbtn-eventil:hover{
+    background: rgb(85, 85, 85);
+}
