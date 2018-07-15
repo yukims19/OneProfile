@@ -19,7 +19,7 @@ const auth = new OneGraphAuth({
 
 const APP_ID = 'e3d209d1-0c66-4603-8d9e-ca949f99506d';
 const URL = window.location.href;
-const USER = "sgrove";//URL.split("?")[1].split("=")[1];
+const USER = URL.split("?")[1].split("=")[1];
 const tempuser = "sgrove";
 
 /*
