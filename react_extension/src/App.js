@@ -18,23 +18,67 @@ const auth = new OneGraphAuth({
 });
 
 const APP_ID = 'e3d209d1-0c66-4603-8d9e-ca949f99506d';
-const URL = window.location.href;
-const USER = URL.split("?")[1].split("=")[1];
-const tempuser = "sgrove";
-
-/*
-const client = new ApolloClient({
-    link: new HttpLink({
-        uri: 'https://serve.onegraph.com/dynamic?app_id=' + APP_ID,
-        headers: {'Content-Type': 'application/json'},
-        credentials: 'include',
-    }),
-    cache: new InMemoryCache(),
-});
-*/
 const client = new OneGraphApolloClient({
     oneGraphAuth: auth,
 });
+const URL ="https://github.com/sgrove";
+      //"https:/fwefweiofjwoi";
+      //"https://github.com/sgrove";
+      //"http://www.riseos.com/";
+      //"https://news.ycombinator.com/user?id=tlrobinson";//window.location.href;
+const USER = "sgrove";//URL.split("?")[1].split("=")[1];
+const tempuser = "sgrove";
+
+
+let target = {
+    hackerNews: null,
+    gitHub: null,
+    twitter: null,
+    reddit: null,
+};
+
+/*********Get Username from Link id param********************/
+// Given a link: https://news.ycombinator.com/user?id=tlrobinson
+// We can have a function:
+
+// e.g. https://news.ycombinator.com/user?id=tlrobinson
+let hnUserNameRE = /https:\/\/news.ycombinator.com\/user/;
+
+// e.g. https://github.com/sgrove/omchaya
+let githubRE = /https:\/\/github.com\//;
+
+const queryParam = (name, url) => {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, '\\$&');
+    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+          results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+};
+
+let serviceAndUserIdFromString = (_servicesAndUsernames, input) => {
+    // Shallow-clone the object so we don't mutate the original
+    let servicesAndUsernames = Object.assign (_servicesAndUsernames, {});
+
+    if (input.match (hnUserNameRE)) {
+        console.log("yyyyyyyyyy")
+        let hnUserId = queryParam ("id", input);
+        servicesAndUsernames.hackerNews = hnUserId;
+    } else if (input.match (githubRE)) {
+        console.log("iiiiiiiiiiii")
+
+            let gitHubLogin = input.split("https://github.com/")[1].split("/")[0];
+            servicesAndUsernames.gitHub = gitHubLogin;
+            }
+
+    // Return the object with the new key (if any) we've found
+    return servicesAndUsernames;
+};
+
+/*****************************************************************/
+//serviceAndUserIdFromString (target, "https://news.ycombinator.com/user?id=tlrobinson");
+
 
 const GET_TwitterQuery = gql`
 query ($USER: String!){
