@@ -79,6 +79,91 @@ let serviceAndUserIdFromString = (_servicesAndUsernames, input) => {
 /*****************************************************************/
 //serviceAndUserIdFromString (target, "https://news.ycombinator.com/user?id=tlrobinson");
 
+/*----->if target == null----->*/
+const URL_Query = gql`
+query($URL: String!) {
+  descuri(url: $URL) {
+    twitter {
+      links
+    }
+    gitHub {
+      uri
+    }
+    hackerNewsUsers {
+      uri
+    }
+  }
+}
+`;
+class DescURI extends Component{
+    render(){
+        return(
+                <Query query={URL_Query}  variables = {{URL}}>
+                {({loading, error, data}) => {
+                    if (loading) return <div>Loading...</div>;
+                    if (error) {
+                        console.log(error);
+                        return <div>Uh oh, something went wrong!</div>;
+                    }
+                    if(idx(data, _ => _.descuri.twitter.links[0])){
+                        target.twitter = idx(data, _ => _.descuri.twitter.links[0]);
+                    }
+                    if(idx(data, _ => _.descuri.gitHub[0].uri)){
+                        console.log("22222")
+                        serviceAndUserIdFromString (target,data.descuri.gitHub[0].uri);
+                        console.log("---------------")
+                        /*
+                        let githuburi = idx(data, _ => _.descuri.gitHub[0].uri.split("/"));
+                        target.gitHub = githuburi[githuburi.length-1];*/
+                    }
+                    if(idx(data, _ => _.descuri.hackerNewsUsers[0].ur)){
+                        console.log("333333")
+                        serviceAndUserIdFromString (target, data.descuri.hackerNewsUsers[0].uri);
+                        /*
+                        let hakernewsuri = idx(data, _ => _.descuri.hackerNewsUsers[0].uri.split("/"));
+                        target.hackerNews = hakernewsuri[hakernewsuri.length-1];
+                        */
+                    }
+                    console.log(target);
+                    return null;
+                }}
+            </Query>
+        )}};
+
+const URLSearch_Query = gql`
+query($URLa: String!,$URLb: String!,$URLc: String!) {
+  descuri(url: $URL) {
+    twitter {
+      links
+    }
+  }
+}
+`;
+
+class URLSearch extends Component{
+    render(){
+        return(
+                <Query query={URLSearch_Query}
+            variables = {{URLa:"https://twitter.com/"+target.twitter,
+                          URLb:"https://github.com/"+target.gitHub,
+                          URLc:"https://news.ycombinator.com/user?id="+target.hackerNews}}>
+                {({loading, error, data}) => {
+                    if (loading) return <div>Loading...</div>;
+                    if (error) {
+                        console.log(error);
+                        return <div>Uh oh, something went wrong!</div>;}
+                    target.twitter = !idx(data, _ => _.descuri.twitter.links);
+                    //target.github = !idx(data, _ => _.descuri.github.links);
+                    //target.hackerNews = !idx(data, _ => _.descuri.hackerNews.links);
+                    return null;
+                }}
+            </Query>
+        )
+    }
+}
+
+
+
 
 const GET_TwitterQuery = gql`
 query ($USER: String!){
