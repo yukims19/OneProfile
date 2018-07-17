@@ -399,89 +399,84 @@ class YoutubeInfo extends Component{
 }
 
 const GET_GithubQuery = gql`
-query($USER: String!) {
-    eventil {
-        user(hackernews: $USER, github: $USER, twitter: $USER, reddit: $USER) {
-            id
-            profile {
+query($github: String!) {
+  gitHub {
+    user(login: $github) {
+      id
+      avatarUrl
+      url
+      login
+      followers {
+        totalCount
+      }
+      following {
+        totalCount
+      }
+      repositories(first: 6, orderBy: { direction: DESC, field: UPDATED_AT }) {
+        nodes {
+          id
+          description
+          url
+          name
+          forks {
+            totalCount
+          }
+          stargazers {
+            totalCount
+          }
+          languages(first: 1, orderBy: { field: SIZE, direction: DESC }) {
+            edges {
+              size
+              node {
                 id
-                gitHubUser {
-                    id
-                    avatarUrl
-                    url
-                    login
-                    followers {
-                        totalCount
-                    }
-                    following {
-                        totalCount
-                    }
-                    repositories(
-                        first: 6
-                        orderBy: { direction: DESC, field: UPDATED_AT }
-                    ) {
-                        nodes {
-                            id
-                            description
-                            url
-                            name
-                            forks {
-                                totalCount
-                            }
-                            stargazers {
-                                totalCount
-                            }
-                            languages(first: 1, orderBy: { field: SIZE, direction: DESC }) {
-                                edges {
-                                    size
-                                    node {
-                                        id
-                                        color
-                                        name
-                                    }
-                                }
-                            }
-                        }
-                        totalCount
-                    }
-                }
+                color
+                name
+              }
             }
+          }
         }
+        totalCount
+      }
     }
+  }
 }
+
 `;
 
 class GithubInfo extends Component{
     render(){
+        if (!target.gitHub){
+            return(<div>No Data Found</div>);
+        }
         return(
-                <Query query={GET_GithubQuery}  variables = {{USER}}>
+                <Query query={GET_GithubQuery}  variables = {{github: target.gitHub}}>
                 {({loading, error, data}) => {
                     if (loading) return <div>Loading...</div>;
                     if (error) {
                         console.log(error);
                         return <div>Uh oh, something went wrong!</div>};
-                    if (!idx(data, _ => _.eventil.user.profile)) return <div>No Data Found for {USER}</div>;
+                    if (!idx(data, _ => _.gitHub.user)) return <div>No Data Found for {USER}</div>;
                     return (
                             <div>
                             <div className="container">
                             <div className="row">
                             <div className="col-md-2">
-                            <a href={idx(data, _ => _.eventil.user.profile.gitHubUser.url)}> <img src={idx(data, _ => _.eventil.user.profile.gitHubUser.avatarUrl)} /></a>
+                            <a href={idx(data, _ => _.gitHub.user.url)}> <img src={idx(data, _ => _.gitHub.user.avatarUrl)} /></a>
                             </div>
                             <div className="col-md-4 user-info">
-                            <h4><a href={idx(data, _ => _.eventil.user.profile.gitHubUser.url)}>{idx(data, _ => _.eventil.user.profile.gitHubUser.login)}</a></h4>
+                            <h4><a href={idx(data, _ => _.gitHub.user.url)}>{idx(data, _ => _.gitHub.user.login)}</a></h4>
                             <p className="info-list">
-                            Total Repositories: {idx(data, _ => _.eventil.user.profile.gitHubUser.totalCount)}
+                            Total Repositories: {idx(data, _ => _.gitHub.user.repositories.totalCount)}
                             <br />
-                            Following: {idx(data, _ => _.eventil.user.profile.gitHubUser.following.totalCount)}
+                            Following: {idx(data, _ => _.gitHub.user.following.totalCount)}
                             <br />
-                            Follwer: {idx(data, _ => _.eventil.user.profile.gitHubUser.followers.totalCount)}
+                            Follwer: {idx(data, _ => _.gitHub.user.followers.totalCount)}
                             <br />
                             </p>
                             </div>
                             </div>
                             <div className="row">
-                            {idx(data, _ => _.eventil.user.profile.gitHubUser.repositories.nodes).map((item)=>{
+                            {idx(data, _ => _.gitHub.user.repositories.nodes).map((item)=>{
                                 return(
                                         <div className="col-md-6">
                                         <div className="card">
