@@ -21,7 +21,7 @@ const APP_ID = 'e3d209d1-0c66-4603-8d9e-ca949f99506d';
 const client = new OneGraphApolloClient({
     oneGraphAuth: auth,
 });
-const URL ="https://github.com/sgrove";
+const URL ="https://news.ycombinator.com/user?id=sgrove";
       //"https:/fwefweiofjwoi";
       //"https://github.com/sgrove";
       //"http://www.riseos.com/";
@@ -166,9 +166,9 @@ class URLSearch extends Component{
 
 
 const GET_TwitterQuery = gql`
-query ($USER: String!){
+query ($hackernews: String!, $github: String!, $twitter: String!, $reddit: String!){
   eventil {
-    user(hackernews: $USER, github: $USER, twitter: $USER, reddit: $USER) {
+    user (hackernews: $hackernews, github: $github, twitter: $twitter, reddit: $reddit) {
       id
       profile {
         id
@@ -203,19 +203,50 @@ query ($USER: String!){
       }
     }
   }
+  descuri(url: $URL) {
+    twitter {
+      timelines {
+        tweets {
+          id
+          user {
+            id
+            screenName
+            name
+          }
+          entities {
+            id
+            urls {
+              url
+            }
+          }
+          favoriteCount
+          video {
+            id
+          }
+          createdAt
+          text
+          idStr
+        }
+      }
+    }
+  }
 }
 `;
 
 class TwitterInfo extends Component{
     render(){
         return(
-                <Query query={GET_TwitterQuery}  variables = {{USER}}>
+                <Query query={GET_TwitterQuery}  variables = {{hackernews: target.hackerNews,
+                                                               github: target.gitHub,
+                                                               twitter: target.twitter,
+                                                               reddit: target.reddit,
+                                                               URL: URL}}>
                 {({loading, error, data}) => {
                     if (loading) return <div>Loading...</div>;
                     if (error) {
                         console.log(error);
                         return <div>Uh oh, something went wrong!</div>;}
-                    if (!idx(data, _ => _.eventil.user.profile)) return <div>No Data Found for {USER}</div>;
+                    if (idx(data, _ => _.eventil.user.profile)){
                     return (
                             <div>
                         {data.eventil.user.profile.twitterTimeline.tweets.map((item)=>{
@@ -245,7 +276,41 @@ class TwitterInfo extends Component{
                                 )
                             })}
                             </div>
-                    );
+                    );}else if(idx(data, _ => _.descuri.twitter.timelines[0])){
+                        console.log(data.descuri.twitter.timelines);
+                        return (
+                            <div>
+                                {data.descuri.twitter.timelines[0].tweets.map((item)=>{
+                                return(
+                                        <div className="card">
+                                        <div className="card-body">
+                                        {/*<img src={/*data.eventil.user.profile.gitHubUser.avatarUrl
+                                           /*Need to replace with twitter avatarUrl />*/}
+                                        <div className="names">
+                                        <h5 className="card-title"><a href={"https://twitter.com/"+item.user.screenName}>{item.user.name}</a></h5>
+                                        <p>@{item.user.screenName}</p>
+                                        </div>
+                                        <a href={"https://twitter.com/"+item.user.screenName+"/status/"+item.idStr}><i className="fab fa-twitter twittericon"></i></a>
+                                        <p className="card-text">{item.text}<br/>
+                                        <span>{(item.createdAt.split(" ")[3].split(":")[0] > 12)?
+                                               (item.createdAt.split(" ")[3].split(":")[0]-12 +":"+item.createdAt.split(" ")[3].split(":")[1]+" PM"):
+                                               (item.createdAt.split(" ")[3].split(":").slice(0,2).join(":")+" AM")
+
+                                              }</span>
+                                        <span>{" - "+item.createdAt.split(" ").slice(1,3).join(" ")+" "+item.createdAt.split(" ")[item.createdAt.split(" ").length-1]}</span>
+                                        </p>
+                                        <div className="card-bottom">
+                                        <p><i className="fas fa-heart"></i> {item.favoriteCount}</p>
+                                    </div>
+                                        </div>
+                                        </div>
+                                )
+                            })}
+                            </div>
+                        )
+                    }else{
+                        return <div>No Data Found</div>
+                    }
                 }}
             </Query>
         )
@@ -292,41 +357,7 @@ class YoutubeInfo extends Component{
                                 )
                             })}
                             </div>
-                    );}else if(idx(data, _ => _.descuri.twitter.timelines[0])){
-                        console.log(data.descuri.twitter.timelines);
-                        return (
-                            <div>
-                                {data.descuri.twitter.timelines[0].tweets.map((item)=>{
-                                return(
-                                        <div className="card">
-                                        <div className="card-body">
-                                        {/*<img src={/*data.eventil.user.profile.gitHubUser.avatarUrl
-                                           /*Need to replace with twitter avatarUrl />*/}
-                                        <div className="names">
-                                        <h5 className="card-title"><a href={"https://twitter.com/"+item.user.screenName}>{item.user.name}</a></h5>
-                                        <p>@{item.user.screenName}</p>
-                                        </div>
-                                        <a href={"https://twitter.com/"+item.user.screenName+"/status/"+item.idStr}><i className="fab fa-twitter twittericon"></i></a>
-                                        <p className="card-text">{item.text}<br/>
-                                        <span>{(item.createdAt.split(" ")[3].split(":")[0] > 12)?
-                                               (item.createdAt.split(" ")[3].split(":")[0]-12 +":"+item.createdAt.split(" ")[3].split(":")[1]+" PM"):
-                                               (item.createdAt.split(" ")[3].split(":").slice(0,2).join(":")+" AM")
-
-                                              }</span>
-                                        <span>{" - "+item.createdAt.split(" ").slice(1,3).join(" ")+" "+item.createdAt.split(" ")[item.createdAt.split(" ").length-1]}</span>
-                                        </p>
-                                        <div className="card-bottom">
-                                        <p><i className="fas fa-heart"></i> {item.favoriteCount}</p>
-                                    </div>
-                                        </div>
-                                        </div>
-                                )
-                            })}
-                            </div>
-                        )
-                    }else{
-                        return <div>No Data Found</div>
-                    }
+                    );
                 }}
             </Query>
         )
