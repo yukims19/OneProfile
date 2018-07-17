@@ -331,31 +331,65 @@ query ($USER: String!){
       }
     }
   }
+  descuri(url: $URL) {
+    other {
+      descuri {
+        youTube {
+          uri
+        }
+      }
+      uri
+    }
+  }
 }
 `;
 
 class YoutubeInfo extends Component{
     render(){
         return(
-                <Query query={GET_YoutubeQuery}  variables = {{USER}}>
+                <Query query={GET_YoutubeQuery}  variables = {{hackernews: target.hackerNews,
+                                                               github: target.gitHub,
+                                                               twitter: target.twitter,
+                                                               reddit: target.reddit,
+                                                               URL: URL}}>
                 {({loading, error, data}) => {
                     if (loading) return <div>Loading...</div>;
                     if (error) {
                         console.log(error);
                         return <div>Uh oh, something went wrong!</div>;}
-                    if (!idx(data, _ => _.eventil.user.presentations)) return <div>No Data Found for {USER}</div>;
-                    return (
-                            <div>
-                            {data.eventil.user.presentations.map((item)=>{
-                                return(
+                    let eventil_video = null;
+                    let descuri_video = null;
+                    if (idx(data, _ => _.eventil.user.presentations)){
+                        eventil_video = data.eventil.user.presentations.map((item)=>{
+                            return(
                                     <div>
                                     {(item.youtubeVideo)?
-                                        <iframe src={"http://www.youtube.com/embed/"+item.youtubeVideo.id}
+                                     <iframe src={"http://www.youtube.com/embed/"+item.youtubeVideo.id}
                                      width="560" height="315"></iframe>:" "
                                     }
-                                    </div>
-                                )
-                            })}
+                                </div>
+                            )
+                        });
+                    }
+                    if (idx(data, _ => _.descuri.other)){
+                        descuri_video = data.descuri.other.map((item)=>{
+                            return(
+                                item.descuri.youTube.map((item)=>{
+                                    return(
+                                        <div>
+                                            <iframe src={"http://www.youtube.com/embed/"+item.uri.split("v=")[1]}
+                                        width="560" height="315"></iframe>
+                                        </div>
+                                    )
+                                })
+                            )
+                        });
+                    }
+                    return (
+                            <div>
+                            {(eventil_video || descuri_video[0])?
+                             <div>{eventil_video}<br/>{descuri_video}</div>: <div>No Data Found</div>
+                            }
                             </div>
                     );
                 }}
