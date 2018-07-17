@@ -292,7 +292,41 @@ class YoutubeInfo extends Component{
                                 )
                             })}
                             </div>
-                    );
+                    );}else if(idx(data, _ => _.descuri.twitter.timelines[0])){
+                        console.log(data.descuri.twitter.timelines);
+                        return (
+                            <div>
+                                {data.descuri.twitter.timelines[0].tweets.map((item)=>{
+                                return(
+                                        <div className="card">
+                                        <div className="card-body">
+                                        {/*<img src={/*data.eventil.user.profile.gitHubUser.avatarUrl
+                                           /*Need to replace with twitter avatarUrl />*/}
+                                        <div className="names">
+                                        <h5 className="card-title"><a href={"https://twitter.com/"+item.user.screenName}>{item.user.name}</a></h5>
+                                        <p>@{item.user.screenName}</p>
+                                        </div>
+                                        <a href={"https://twitter.com/"+item.user.screenName+"/status/"+item.idStr}><i className="fab fa-twitter twittericon"></i></a>
+                                        <p className="card-text">{item.text}<br/>
+                                        <span>{(item.createdAt.split(" ")[3].split(":")[0] > 12)?
+                                               (item.createdAt.split(" ")[3].split(":")[0]-12 +":"+item.createdAt.split(" ")[3].split(":")[1]+" PM"):
+                                               (item.createdAt.split(" ")[3].split(":").slice(0,2).join(":")+" AM")
+
+                                              }</span>
+                                        <span>{" - "+item.createdAt.split(" ").slice(1,3).join(" ")+" "+item.createdAt.split(" ")[item.createdAt.split(" ").length-1]}</span>
+                                        </p>
+                                        <div className="card-bottom">
+                                        <p><i className="fas fa-heart"></i> {item.favoriteCount}</p>
+                                    </div>
+                                        </div>
+                                        </div>
+                                )
+                            })}
+                            </div>
+                        )
+                    }else{
+                        return <div>No Data Found</div>
+                    }
                 }}
             </Query>
         )
