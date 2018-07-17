@@ -21,13 +21,14 @@ const APP_ID = 'e3d209d1-0c66-4603-8d9e-ca949f99506d';
 const client = new OneGraphApolloClient({
     oneGraphAuth: auth,
 });
-const URL ="https://news.ycombinator.com/user?id=sgrove";
+const URL =window.location.href.split("q=")[1];
+      //"https://news.ycombinator.com/user?id=sgrove";
       //"https:/fwefweiofjwoi";
       //"https://github.com/sgrove";
       //"http://www.riseos.com/";
-      //"https://news.ycombinator.com/user?id=tlrobinson";//window.location.href;
-const USER = "sgrove";//URL.split("?")[1].split("=")[1];
-const tempuser = "sgrove";
+      //"https://news.ycombinator.com/user?id=tlrobinson";//
+//const USER = "sgrove";//URL.split("?")[1].split("=")[1];
+//const tempuser = "sgrove";
 
 
 let target = {
@@ -62,12 +63,9 @@ let serviceAndUserIdFromString = (_servicesAndUsernames, input) => {
     let servicesAndUsernames = Object.assign (_servicesAndUsernames, {});
 
     if (input.match (hnUserNameRE)) {
-        console.log("yyyyyyyyyy")
         let hnUserId = queryParam ("id", input);
         servicesAndUsernames.hackerNews = hnUserId;
     } else if (input.match (githubRE)) {
-        console.log("iiiiiiiiiiii")
-
             let gitHubLogin = input.split("https://github.com/")[1].split("/")[0];
             servicesAndUsernames.gitHub = gitHubLogin;
             }
@@ -109,20 +107,11 @@ class DescURI extends Component{
                         target.twitter = idx(data, _ => _.descuri.twitter.links[0]);
                     }
                     if(idx(data, _ => _.descuri.gitHub[0].uri)){
-                        console.log("22222")
                         serviceAndUserIdFromString (target,data.descuri.gitHub[0].uri);
-                        console.log("---------------")
-                        /*
-                        let githuburi = idx(data, _ => _.descuri.gitHub[0].uri.split("/"));
-                        target.gitHub = githuburi[githuburi.length-1];*/
                     }
                     if(idx(data, _ => _.descuri.hackerNewsUsers[0].ur)){
                         console.log("333333")
                         serviceAndUserIdFromString (target, data.descuri.hackerNewsUsers[0].uri);
-                        /*
-                        let hakernewsuri = idx(data, _ => _.descuri.hackerNewsUsers[0].uri.split("/"));
-                        target.hackerNews = hakernewsuri[hakernewsuri.length-1];
-                        */
                     }
                     console.log(target);
                     return null;
@@ -277,7 +266,6 @@ class TwitterInfo extends Component{
                             })}
                             </div>
                     );}else if(idx(data, _ => _.descuri.twitter.timelines[0])){
-                        console.log(data.descuri.twitter.timelines);
                         return (
                             <div>
                                 {data.descuri.twitter.timelines[0].tweets.map((item)=>{
@@ -455,7 +443,7 @@ class GithubInfo extends Component{
                     if (error) {
                         console.log(error);
                         return <div>Uh oh, something went wrong!</div>};
-                    if (!idx(data, _ => _.gitHub.user)) return <div>No Data Found for {USER}</div>;
+                    if (!idx(data, _ => _.gitHub.user)) return <div>No Data Found</div>;
                     return (
                             <div>
                             <div className="container">
@@ -561,7 +549,7 @@ class GithubGeneralInfo extends Component{
                     if (error) {
                         console.log(error);
                         return <div>Uh oh, something went wrong!</div>;}
-                    if (!idx(data, _ => _.gitHub.user)) return <div>No Data Found for {USER}</div>;
+                    if (!idx(data, _ => _.gitHub.user)) return <div>No Data Found</div>;
                     return (
                             <div>
                             <div className="container">
@@ -760,7 +748,6 @@ class App extends Component {
     render() {
         serviceAndUserIdFromString (target,URL);
         <ApolloProvider client={client}><DescURI /></ApolloProvider>;
-        console.log("endendend");
         var eventil_content;
         var github_content;
         var youtube_content;
