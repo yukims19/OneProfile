@@ -509,9 +509,9 @@ class GithubInfo extends Component{
 }
 
 const GET_GeneralQuery = gql`
-query ($USER: String!){
+query ($hackernews: String!, $github: String!, $twitter: String!, $reddit: String!){
   eventil {
-    user (hackernews: $USER, github: $USER, twitter: $USER, reddit: $USER) {
+    user (hackernews: $hackernews, github: $github, twitter: $twitter, reddit: $reddit) {
       profile {
         avatar
         description
@@ -535,14 +535,123 @@ query ($USER: String!){
   }
 }
 `;
+
+const GET_GithubGeneralQuery = gql`
+query ($github: String!){
+  gitHub {
+    user(login: $github) {
+      websiteUrl
+      avatarUrl
+      location
+      company
+      email
+      name
+      bio
+    }
+  }
+}
+`;
+
+class GithubGeneralInfo extends Component{
+    render(){
+        return(
+                <Query query={GET_GithubGeneralQuery}  variables = {{github: target.gitHub}}>
+                {({loading, error, data}) => {
+                    if (loading) return <div>Loading...</div>;
+                    if (error) {
+                        console.log(error);
+                        return <div>Uh oh, something went wrong!</div>;}
+                    if (!idx(data, _ => _.gitHub.user)) return <div>No Data Found for {USER}</div>;
+                    return (
+                            <div>
+                            <div className="container">
+                            <div className="row">
+                            <div className="col-md-4">
+                            <img src={idx(data, _ => _.gitHub.user.avatarUrl)} />
+                            </div>
+                            <div className="col-md-8">
+                            <h4>{idx(data, _ => _.gitHub.user.name)}</h4>
+                            {idx(data, _ => _.gitHub.user.company)}<br />
+                            <small><cite title={idx(data, _ => _.gitHub.user.location)}>{idx(data, _ => _.gitHub.user.location)} <i className="fas fa-map-marker-alt">
+                            </i></cite></small>
+                            <p>
+                            {idx(data, _ => _.gitHub.user.location)}
+                            </p>
+                            <p className="info-list">
+                            <i className="fas fa-envelope"></i> {idx(data, _ => _.gitHub.user.email)}
+                            <br />
+                            <i className="fas fa-globe"></i> <a href= {idx(data, _ => _.gitHub.user.websiteUrl)}>{idx(data, _ => _.gitHub.user.websiteUrl)}</a>
+                            <br />
+                            <i className="fab fa-github-square"></i> {target.gitHub}
+                            <br />
+                            <i className="fab fa-twitter-square"></i> {target.twitter}
+                            <br />
+                            <i className="fab fa-reddit-square"></i>{target.reddit}
+                            <br />
+                            </p>
+                            </div>
+                            </div>
+                            </div>
+                            </div>
+                    );
+                }}
+            </Query>
+        )
+    }
+}
+
 class EventilInfo extends Component{
     render(){
         return(
-                <Query query={GET_GeneralQuery} variables = {{USER}}>
+                <Query query={GET_GeneralQuery} variables = {{hackernews: target.hackerNews,
+                                                              github: target.gitHub,
+                                                              twitter: target.twitter,
+                                                              reddit: target.reddit}}>
                 {({loading, error, data}) => {
                     if (loading) return <div>Loading...</div>;
-                    if (error) return <div>Uh oh, something went wrong!</div>;
-                    if (!idx(data, _ => _.eventil.user.profile)) return <div>No Data Found for {USER}</div>;
+                    if (error) {
+                        console.log(error);
+                        return <div>Uh oh, something went wrong!</div>
+                    }
+                    console.log(target);
+                    if (!idx(data, _ => _.eventil.user.profile)){
+                        if(target.gitHub){
+                            if (this.props.github){
+                                return (
+                                        <ApolloProvider client={client}><GithubGeneralInfo /></ApolloProvider>
+                                )
+                            }else{
+                                return (
+                                        <div>
+                                        No Eventil Data Found<br/>
+                                        Try with GitHub!<br/>
+                                        {this.props.button("Github", "github")}
+
+                                    </div>
+                                )
+                            }
+                            ;
+                        }else if (target.gitHub==null && target.hackerNews==null && target.twitter==null && target.reddit==null){
+                            return(
+                                <div>
+                                No Data Found<br/>
+                                    </div>)
+                        }else{
+                            return(
+                                    <div>
+                                    <h5>Found Usernames</h5>
+                                    {Object.keys(target).map((e)=>{
+                                        return(
+                                            target[e]? <li>{e}: {target[e]}</li> : "")
+                                    })
+                                    }
+                                    </div>)
+                        }};
+                    target.hackerNews = idx(data, _ => _.eventil.user.profile.hackernews);
+                    target.gitHub = idx(data, _ => _.eventil.user.profile.github);
+                    target.twitter = idx(data, _ => _.eventil.user.profile.twitter);
+                    target.reddit = idx(data, _ => _.eventil.user.profile.reddit);
+                    console.log(target);
                     return (
                             <div>
                             <div className="container">
@@ -649,13 +758,16 @@ class App extends Component {
     }
 
     render() {
+        serviceAndUserIdFromString (target,URL);
+        <ApolloProvider client={client}><DescURI /></ApolloProvider>;
+        console.log("endendend");
         var eventil_content;
         var github_content;
         var youtube_content;
         var twitter_content;
 
         if(this.state.eventil){
-            eventil_content = <ApolloProvider client={client}><EventilInfo /></ApolloProvider>;
+            eventil_content = <ApolloProvider client={client}><EventilInfo button={(eventTitle, eventClass)=>this.renderButton(eventTitle, eventClass)} github={this.state.github}/></ApolloProvider>;
         }else{
             eventil_content = this.renderButton("Eventil", "eventil");
         }
@@ -677,6 +789,7 @@ class App extends Component {
 
     return (
             <div className="App">
+            <ApolloProvider client={client}><DescURI /></ApolloProvider>
             <Tabs defaultActiveKey="1">
             <TabPane tab={<span>General</span>} key="1">
             <div className="tab-content" id="general-content">
