@@ -318,9 +318,9 @@ class TwitterInfo extends Component{
 }
 
 const GET_YoutubeQuery = gql`
-query ($USER: String!){
+query ($hackernews: String!, $github: String!, $twitter: String!, $reddit: String!){
   eventil {
-    user(hackernews: $USER, github: $USER, twitter: $USER, reddit: $USER) {
+    user(hackernews: $hackernews, github: $github, twitter: $twitter, reddit: $reddit) {
       id
       presentations {
         id
