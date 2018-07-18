@@ -5,16 +5,16 @@ chrome.runtime.onInstalled.addListener(function() {
 
 
     function renderInfo(info, tab) {
-        console.log("item " + info.selectionText + " was clicked");
+        console.log("item " + info.linkUrl + " was clicked");
         console.log("info: " + JSON.stringify(info));
         console.log("tab: " + JSON.stringify(tab));
         chrome.windows.create({
-            url : "index.html/?q="+info.selectionText,
+            url : "index.html/?q="+info.linkUrl,
             focused : true,
             type : "popup"});
     }
     var title = "Search %s via OneProfile";
     var id = chrome.contextMenus.create({"title": "Search \"%s\" via OneProfile",
-									                       "contexts":["selection"],
+									                       "contexts":["link"],
                                          "onclick": renderInfo});
 });
