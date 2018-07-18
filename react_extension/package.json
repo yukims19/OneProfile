@@ -23,5 +23,12 @@
   },
   "devDependencies": {
     "react-test-renderer": "^16.4.1"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "all",
+    "bracketSpacing": false,
+    "jsxBracketSameLine": true,
+    "printWidth": 80
   }
 }
