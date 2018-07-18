@@ -1,14 +1,14 @@
-const IFRAME_ID = 'reviewbot-extension';
+const IFRAME_ID = "reviewbot-extension";
 
 const el = document.getElementById(IFRAME_ID);
 
-if(el) {
+if (el) {
   document.body.removeChild(el);
 } else {
-  const iframe = document.createElement('iframe');
+  const iframe = document.createElement("iframe");
 
   iframe.id = IFRAME_ID;
-  iframe.src = window.chrome.runtime.getURL('index.html');
+  iframe.src = window.chrome.runtime.getURL("index.html");
   iframe.style = `
     border: none;
 
