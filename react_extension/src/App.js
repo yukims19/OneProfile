@@ -21,7 +21,9 @@ const APP_ID = "e3d209d1-0c66-4603-8d9e-ca949f99506d";
 const client = new OneGraphApolloClient({
   oneGraphAuth: auth
 });
-const URL = "https://news.ycombinator.com/user?id=edent";
+const URL = window.location.href.split("q=")[1];
+//"https://news.ycombinator.com/user?id=edent";
+
 //window.location.href.split("q=")[1];
 //"https://news.ycombinator.com/user?id=sgrove";
 //"https:/fwefweiofjwoi";
