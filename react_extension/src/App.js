@@ -21,7 +21,7 @@ const APP_ID = "e3d209d1-0c66-4603-8d9e-ca949f99506d";
 const client = new OneGraphApolloClient({
   oneGraphAuth: auth
 });
-const URL = window.location.href.split("q=")[1];
+const URL = "https://news.ycombinator.com/user?id=sgrove"; // window.location.href.split("q=")[1];
 //"https://news.ycombinator.com/user?id=edent";
 
 //window.location.href.split("q=")[1];
@@ -192,6 +192,7 @@ const GET_TwitterQuery = gql`
                 id
                 screenName
                 name
+                profileImageUrlHttps
               }
               entities {
                 id
@@ -220,6 +221,8 @@ const GET_TwitterQuery = gql`
               id
               screenName
               name
+              profileImageUrlHttps
+              profileBackgroundImageUrlHttps
             }
             entities {
               id
@@ -267,12 +270,7 @@ class TwitterInfo extends Component {
                   return (
                     <div className="card">
                       <div className="card-body">
-                        <img
-                          src={
-                            data.eventil.user.profile.gitHubUser.avatarUrl
-                            /*Need to replace with twitter avatarUrl*/
-                          }
-                        />
+                        <img src={item.user.profileImageUrlHttps} />
                         <div className="names">
                           <h5 className="card-title">
                             <a
@@ -340,8 +338,7 @@ class TwitterInfo extends Component {
                   return (
                     <div className="card">
                       <div className="card-body">
-                        {/*<img src={/*data.eventil.user.profile.gitHubUser.avatarUrl
-                                           /*Need to replace with twitter avatarUrl />*/}
+                        <img src={item.user.profileImageUrlHttps} />
                         <div className="names">
                           <h5 className="card-title">
                             <a
@@ -508,9 +505,12 @@ class YoutubeInfo extends Component {
             <div>
               {eventil_video || descuri_video[0][0]
                 ? <div>
-                    {eventil_video}
-                    <br />
-                    {descuri_video}
+                    <div>
+                      {eventil_video}
+                    </div>
+                    <div>
+                      {descuri_video}
+                    </div>
                   </div>
                 : <div>No Data Found</div>}
             </div>

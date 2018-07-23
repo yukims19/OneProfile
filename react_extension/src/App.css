@@ -38,16 +38,13 @@
   text-align: left;
   //    width: 320px;
   height: 170px;
-  margin: 10px;
 }
 #github-content img {
   width: 100%;
-  margin: 10px;
   border-radius: 5px;
 }
 #github-content .user-info {
   text-align: left;
-  padding: 10px;
 }
 #github-content .user-info h4 a {
   color: black;
@@ -78,14 +75,13 @@
 }
 
 #youtube-content iframe {
-  margin: 20px;
+  margin-bottom: 20px;
 }
 
 #twitter-content .card {
   max-width: 500px;
   text-align: left;
   margin: auto;
-  margin-top: 20px;
 }
 #twitter-content .card-title {
   margin: 0px;
