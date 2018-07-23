@@ -13,6 +13,7 @@ Open `src/App.js` and put the APP_ID in there.
 ### 1. Build the chrome extension folder;
 
 ```
+yarn
 yarn build
 ```
 
