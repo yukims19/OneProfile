@@ -23,6 +23,7 @@ const client = new OneGraphApolloClient({
 });
 const URL = window.location.href.split("q=")[1];
 //"https://news.ycombinator.com/user?id=edent";
+
 //window.location.href.split("q=")[1];
 //"https://news.ycombinator.com/user?id=sgrove";
 //"https:/fwefweiofjwoi";
