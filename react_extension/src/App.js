@@ -770,7 +770,7 @@ class GithubInfo extends Component {
                       Following:{" "}
                       {idx(data, _ => _.gitHub.user.following.totalCount)}
                       <br />
-                      Follwer:{" "}
+                      Follower:{" "}
                       {idx(data, _ => _.gitHub.user.followers.totalCount)}
                       <br />
                     </p>
