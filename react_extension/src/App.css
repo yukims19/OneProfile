@@ -98,7 +98,10 @@
 #youtube-content .video-stats .thumbs div {
   margin: 0px 10px 0px 10px;
 }
-
+#twitter-content {
+  width: 100%;
+  left: 0px;
+}
 #twitter-content .card {
   max-width: 500px;
   text-align: left;

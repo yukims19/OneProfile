@@ -294,7 +294,7 @@ class TwitterInfo extends Component {
                       _ =>
                         _.eventil.user.profile.twitterTimeline.tweets[0].user
                           .profileImageUrlHttps
-                    )}
+                    ).replace("_normal", "")}
                   />
                 </div>
                 {data.eventil.user.profile.twitterTimeline.tweets.map(item => {
@@ -390,7 +390,7 @@ class TwitterInfo extends Component {
                       _ =>
                         _.descuri.twitter.timelines[0].tweets[0].user
                           .profileImageUrlHttps
-                    )}
+                    ).replace("_normal", "")}
                   />
                 </div>
                 {data.descuri.twitter.timelines[0].tweets.map(item => {
