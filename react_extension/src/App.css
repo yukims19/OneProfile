@@ -38,6 +38,7 @@
   text-align: left;
   //    width: 320px;
   height: 170px;
+  margin: 10px 0px 10px 0px;
 }
 #github-content img {
   width: 100%;
@@ -74,14 +75,35 @@
   margin-right: 10px;
 }
 
-#youtube-content iframe {
-  margin-bottom: 20px;
+#youtube-content .video-title {
+  width: 560px;
+  margin: auto;
+  font-size: 1.2rem;
+  text-align: left;
+  color: black;
+}
+
+#youtube-content .video-stats {
+  width: 560px;
+  display: flex;
+  justify-content: space-between;
+  margin: auto;
+  margin-bottom: 60px;
+  font-size: 1rem;
+}
+#youtube-content .video-stats .thumbs {
+  display: flex;
+  justify-content: flex-end;
+}
+#youtube-content .video-stats .thumbs div {
+  margin: 0px 10px 0px 10px;
 }
 
 #twitter-content .card {
   max-width: 500px;
   text-align: left;
   margin: auto;
+  margin-bottom: 20px;
 }
 #twitter-content .card-title {
   margin: 0px;
@@ -98,6 +120,28 @@
 #twitter-content .twittericon {
   display: inline-block;
 }
+
+#twitter-content .twitter-back-img {
+  overflow-y: hidden;
+  height: 220px;
+  background-color: #1da1f2;
+  //width: 100vh;
+}
+#twitter-content .twitter-back-img img {
+  width: 100%;
+  height: auto;
+  border-radius: 0px;
+}
+#twitter-content .twitter-back-avatar-container {
+  height: 100px;
+}
+#twitter-content .twitter-back-avatar {
+  height: 160px;
+  top: -110px;
+  left: -30%;
+  border: 5px solid white;
+}
+
 #twitter-content .twittericon {
   position: absolute;
   right: 1.25rem;

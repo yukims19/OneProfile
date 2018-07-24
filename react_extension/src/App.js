@@ -193,6 +193,8 @@ const GET_TwitterQuery = gql`
                 screenName
                 name
                 profileImageUrlHttps
+                profileBannerUrl
+                profileUseBackgroundImage
               }
               entities {
                 id
@@ -222,7 +224,8 @@ const GET_TwitterQuery = gql`
               screenName
               name
               profileImageUrlHttps
-              profileBackgroundImageUrlHttps
+              profileBannerUrl
+              profileUseBackgroundImage
             }
             entities {
               id
@@ -266,6 +269,34 @@ class TwitterInfo extends Component {
           if (idx(data, _ => _.eventil.user.profile)) {
             return (
               <div>
+                <div className="twitter-back-img">
+                  {idx(
+                    data,
+                    _ =>
+                      _.eventil.user.profile.twitterTimeline.tweets[0].user
+                        .profileUseBackgroundImage
+                  )
+                    ? <img
+                        src={idx(
+                          data,
+                          _ =>
+                            _.eventil.user.profile.twitterTimeline.tweets[0]
+                              .user.profileBannerUrl
+                        )}
+                      />
+                    : ""}
+                </div>
+                <div className="twitter-back-avatar-container">
+                  <img
+                    className="twitter-back-avatar"
+                    src={idx(
+                      data,
+                      _ =>
+                        _.eventil.user.profile.twitterTimeline.tweets[0].user
+                          .profileImageUrlHttps
+                    )}
+                  />
+                </div>
                 {data.eventil.user.profile.twitterTimeline.tweets.map(item => {
                   return (
                     <div className="card">
@@ -334,6 +365,34 @@ class TwitterInfo extends Component {
           } else if (idx(data, _ => _.descuri.twitter.timelines[0])) {
             return (
               <div>
+                <div className="twitter-back-img">
+                  {idx(
+                    data,
+                    _ =>
+                      _.descuri.twitter.timelines[0].tweets[0].user
+                        .profileUseBackgroundImage
+                  )
+                    ? <img
+                        src={idx(
+                          data,
+                          _ =>
+                            _.descuri.twitter.timelines[0].tweets[0].user
+                              .profileBannerUrl
+                        )}
+                      />
+                    : ""}
+                </div>
+                <div className="twitter-back-avatar-container">
+                  <img
+                    className="twitter-back-avatar"
+                    src={idx(
+                      data,
+                      _ =>
+                        _.descuri.twitter.timelines[0].tweets[0].user
+                          .profileImageUrlHttps
+                    )}
+                  />
+                </div>
                 {data.descuri.twitter.timelines[0].tweets.map(item => {
                   return (
                     <div className="card">
@@ -426,8 +485,16 @@ const GET_YoutubeQuery = gql`
         presentations {
           id
           video_url
+          draft {
+            title
+          }
           youtubeVideo {
             id
+            statistics {
+              viewCount
+              dislikeCount
+              likeCount
+            }
           }
         }
       }
@@ -444,6 +511,65 @@ const GET_YoutubeQuery = gql`
     }
   }
 `;
+
+const GET_DescuriYoutubeStats = gql`
+  query($id: String!) {
+    youTubeVideo(id: $id) {
+      statistics {
+        dislikeCount
+        likeCount
+        viewCount
+      }
+      id
+      snippet {
+        title
+      }
+    }
+  }
+`;
+
+class DescuriYoutubeStats extends Component {
+  render() {
+    return (
+      <Query
+        query={GET_DescuriYoutubeStats}
+        variables={{
+          id: this.props.videoId
+        }}
+      >
+        {({ loading, error, data }) => {
+          if (loading) return <div>Loading...</div>;
+          if (error) {
+            console.log(error);
+            return <div>Uh oh, something went wrong!</div>;
+          }
+          return (
+            <div>
+              <p className="video-title">
+                {idx(data, _ => _.youTubeVideo.snippet.title)}
+              </p>
+              <div className="video-stats">
+                <div>
+                  {idx(data, _ => _.youTubeVideo.statistics.viewCount)} views
+                </div>
+                <div className="thumbs">
+                  <div>
+                    <i className="fas fa-thumbs-up" />{" "}
+                    {idx(data, _ => _.youTubeVideo.statistics.likeCount)}
+                  </div>
+                  <div>
+                    <i className="fas fa-thumbs-down" />{" "}
+                    {idx(data, _ => _.youTubeVideo.statistics.dislikeCount)}
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        }}
+      </Query>
+    );
+  }
+}
 
 class YoutubeInfo extends Component {
   render() {
@@ -471,13 +597,34 @@ class YoutubeInfo extends Component {
               return (
                 <div>
                   {item.youtubeVideo
-                    ? <iframe
-                        src={
-                          "http://www.youtube.com/embed/" + item.youtubeVideo.id
-                        }
-                        width="560"
-                        height="315"
-                      />
+                    ? <div>
+                        <iframe
+                          src={
+                            "http://www.youtube.com/embed/" +
+                            item.youtubeVideo.id
+                          }
+                          width="560"
+                          height="315"
+                        />
+                        <p className="video-title">
+                          {item.draft.title}
+                        </p>
+                        <div className="video-stats">
+                          <div>
+                            {item.youtubeVideo.statistics.viewCount} views
+                          </div>
+                          <div className="thumbs">
+                            <div>
+                              <i className="fas fa-thumbs-up" />{" "}
+                              {item.youtubeVideo.statistics.likeCount}
+                            </div>
+                            <div>
+                              <i className="fas fa-thumbs-down" />{" "}
+                              {item.youtubeVideo.statistics.dislikeCount}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     : " "}
                 </div>
               );
@@ -496,6 +643,7 @@ class YoutubeInfo extends Component {
                       width="560"
                       height="315"
                     />
+                    <DescuriYoutubeStats videoId={item.uri.split("v=")[1]} />
                   </div>
                 );
               });
