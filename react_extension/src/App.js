@@ -7,6 +7,7 @@ import OneGraphApolloClient from "onegraph-apollo-client";
 import OneGraphAuth from "onegraph-auth";
 import idx from "idx";
 
+/*** Be sure to create an app on https://onegraph.com, replace the APP_ID here, and add the chrome-extension id to your CORS origins ***/
 const APP_ID = "e3d209d1-0c66-4603-8d9e-ca949f99506d";
 
 const auth = new OneGraphAuth({
