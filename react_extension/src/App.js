@@ -51,7 +51,7 @@ let githubRE = /https:\/\/github.com\//;
 
 const queryParam = (name, url) => {
   if (!url) url = window.location.href;
-  name = name.replace(/[\[\]]/g, "\\$&");
+  name = name.replace(/[\]]/g, "\\$&");
   var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
     results = regex.exec(url);
   if (!results) return null;
@@ -123,6 +123,7 @@ class DescURI extends Component {
   }
 }
 
+/*
 const URLSearch_Query = gql`
   query($URLa: String!, $URLb: String!, $URLc: String!) {
     descuri(url: $URL) {
@@ -159,6 +160,7 @@ class URLSearch extends Component {
     );
   }
 }
+*/
 
 const GET_TwitterQuery = gql`
   query(
@@ -403,9 +405,9 @@ class TwitterInfo extends Component {
                     ).replace("_normal", "")}
                   />
                 </div>
-                {data.descuri.twitter.timelines[0].tweets.map(item => {
+                {data.descuri.twitter.timelines[0].tweets.map((item, index) => {
                   return (
-                    <div className="card">
+                    <div className="card" key={index}>
                       <div className="card-body">
                         <img
                           src={item.user.profileImageUrlHttps}
@@ -543,44 +545,48 @@ const GET_DescuriYoutubeStats = gql`
 
 class DescuriYoutubeStats extends Component {
   render() {
-    return (
-      <Query
-        query={GET_DescuriYoutubeStats}
-        variables={{
-          id: this.props.videoId
-        }}
-      >
-        {({ loading, error, data }) => {
-          if (loading) return <div>Loading...</div>;
-          if (error) {
-            console.log(error);
-            return <div>Uh oh, something went wrong!</div>;
-          }
-          return (
-            <div>
-              <p className="video-title">
-                {idx(data, _ => _.youTubeVideo.snippet.title)}
-              </p>
-              <div className="video-stats">
-                <div>
-                  {idx(data, _ => _.youTubeVideo.statistics.viewCount)} views
-                </div>
-                <div className="thumbs">
+    if (!this.props.videoId) {
+      return <div />;
+    } else {
+      return (
+        <Query
+          query={GET_DescuriYoutubeStats}
+          variables={{
+            id: this.props.videoId
+          }}
+        >
+          {({ loading, error, data }) => {
+            if (loading) return <div>Loading...</div>;
+            if (error) {
+              console.log(error);
+              return <div>Uh oh, something went wrong!</div>;
+            }
+            return (
+              <div>
+                <p className="video-title">
+                  {idx(data, _ => _.youTubeVideo.snippet.title)}
+                </p>
+                <div className="video-stats">
                   <div>
-                    <i className="fas fa-thumbs-up" />{" "}
-                    {idx(data, _ => _.youTubeVideo.statistics.likeCount)}
+                    {idx(data, _ => _.youTubeVideo.statistics.viewCount)} views
                   </div>
-                  <div>
-                    <i className="fas fa-thumbs-down" />{" "}
-                    {idx(data, _ => _.youTubeVideo.statistics.dislikeCount)}
+                  <div className="thumbs">
+                    <div>
+                      <i className="fas fa-thumbs-up" />{" "}
+                      {idx(data, _ => _.youTubeVideo.statistics.likeCount)}
+                    </div>
+                    <div>
+                      <i className="fas fa-thumbs-down" />{" "}
+                      {idx(data, _ => _.youTubeVideo.statistics.dislikeCount)}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          );
-        }}
-      </Query>
-    );
+            );
+          }}
+        </Query>
+      );
+    }
   }
 }
 
@@ -613,6 +619,7 @@ class YoutubeInfo extends Component {
                     {item.youtubeVideo
                       ? <div>
                           <iframe
+                            title={index}
                             src={
                               "http://www.youtube.com/embed/" +
                               item.youtubeVideo.id
@@ -651,6 +658,7 @@ class YoutubeInfo extends Component {
                 return (
                   <div key={index}>
                     <iframe
+                      title={index}
                       src={
                         "http://www.youtube.com/embed/" +
                         item.uri.split("v=")[1]
@@ -1148,9 +1156,7 @@ class App extends Component {
 
   render() {
     serviceAndUserIdFromString(target, URL);
-    <ApolloProvider client={client}>
-      <DescURI />
-    </ApolloProvider>;
+
     var eventil_content;
     var github_content;
     var youtube_content;
@@ -1251,3 +1257,6 @@ class App extends Component {
 }
 
 export default App;
+/*    <ApolloProvider client={client}>
+    <DescURI />
+</ApolloProvider>;*/
