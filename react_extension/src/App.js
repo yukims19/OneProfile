@@ -2,28 +2,25 @@ import React, { Component } from "react";
 import "./App.css";
 import { Tabs, Icon } from "antd";
 import { gql } from "apollo-boost";
-import { ApolloClient } from "apollo-client";
-import { HttpLink } from "apollo-link-http";
-import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloProvider, Query } from "react-apollo";
 import OneGraphApolloClient from "onegraph-apollo-client";
 import OneGraphAuth from "onegraph-auth";
 import idx from "idx";
 
-const TabPane = Tabs.TabPane;
+const APP_ID = "e3d209d1-0c66-4603-8d9e-ca949f99506d";
 
 const auth = new OneGraphAuth({
-  appId: "e3d209d1-0c66-4603-8d9e-ca949f99506d",
+  appId: APP_ID,
   oauthFinishPath: "/index.html"
 });
 
-const APP_ID = "e3d209d1-0c66-4603-8d9e-ca949f99506d";
 const client = new OneGraphApolloClient({
   oneGraphAuth: auth
 });
-const URL = "https://news.ycombinator.com/user?id=sgrove"; // window.location.href.split("q=")[1];
-//"https://news.ycombinator.com/user?id=edent";
 
+const URL = window.location.href.split("q=")[1];
+/*URL Examples*/
+//"https://news.ycombinator.com/user?id=edent";
 //window.location.href.split("q=")[1];
 //"https://news.ycombinator.com/user?id=sgrove";
 //"https:/fwefweiofjwoi";
@@ -33,6 +30,7 @@ const URL = "https://news.ycombinator.com/user?id=sgrove"; // window.location.hr
 //const USER = "sgrove";//URL.split("?")[1].split("=")[1];
 //const tempuser = "sgrove";
 
+const TabPane = Tabs.TabPane;
 let target = {
   hackerNews: null,
   gitHub: null,
@@ -112,13 +110,11 @@ class DescURI extends Component {
             serviceAndUserIdFromString(target, data.descuri.gitHub[0].uri);
           }
           if (idx(data, _ => _.descuri.hackerNewsUsers[0].ur)) {
-            console.log("333333");
             serviceAndUserIdFromString(
               target,
               data.descuri.hackerNewsUsers[0].uri
             );
           }
-          console.log(target);
           return null;
         }}
       </Query>
@@ -193,6 +189,8 @@ const GET_TwitterQuery = gql`
                 screenName
                 name
                 profileImageUrlHttps
+                profileBannerUrl
+                profileUseBackgroundImage
               }
               entities {
                 id
@@ -222,7 +220,8 @@ const GET_TwitterQuery = gql`
               screenName
               name
               profileImageUrlHttps
-              profileBackgroundImageUrlHttps
+              profileBannerUrl
+              profileUseBackgroundImage
             }
             entities {
               id
@@ -266,79 +265,151 @@ class TwitterInfo extends Component {
           if (idx(data, _ => _.eventil.user.profile)) {
             return (
               <div>
-                {data.eventil.user.profile.twitterTimeline.tweets.map(item => {
-                  return (
-                    <div className="card">
-                      <div className="card-body">
-                        <img src={item.user.profileImageUrlHttps} />
-                        <div className="names">
-                          <h5 className="card-title">
-                            <a
-                              href={
-                                "https://twitter.com/" + item.user.screenName
-                              }
-                            >
-                              {item.user.name}
-                            </a>
-                          </h5>
-                          <p>
-                            @{item.user.screenName}
+                <div className="twitter-back-img">
+                  {idx(
+                    data,
+                    _ =>
+                      _.eventil.user.profile.twitterTimeline.tweets[0].user
+                        .profileUseBackgroundImage
+                  )
+                    ? <img
+                        alt="Twitter Background"
+                        src={idx(
+                          data,
+                          _ =>
+                            _.eventil.user.profile.twitterTimeline.tweets[0]
+                              .user.profileBannerUrl
+                        )}
+                      />
+                    : ""}
+                </div>
+                <div className="twitter-back-avatar-container">
+                  <img
+                    alt="Twitter Avatar"
+                    className="twitter-back-avatar"
+                    src={idx(
+                      data,
+                      _ =>
+                        _.eventil.user.profile.twitterTimeline.tweets[0].user
+                          .profileImageUrlHttps
+                    ).replace("_normal", "")}
+                  />
+                </div>
+                {data.eventil.user.profile.twitterTimeline.tweets.map(
+                  (item, index) => {
+                    return (
+                      <div className="card" key={index}>
+                        <div className="card-body">
+                          <img
+                            src={item.user.profileImageUrlHttps}
+                            alt="Avatar"
+                          />
+                          <div className="names">
+                            <h5 className="card-title">
+                              <a
+                                href={
+                                  "https://twitter.com/" + item.user.screenName
+                                }
+                              >
+                                {item.user.name}
+                              </a>
+                            </h5>
+                            <p>
+                              @{item.user.screenName}
+                            </p>
+                          </div>
+                          <a
+                            href={
+                              "https://twitter.com/" +
+                              item.user.screenName +
+                              "/status/" +
+                              item.idStr
+                            }
+                          >
+                            <i className="fab fa-twitter twittericon" />
+                          </a>
+                          <p className="card-text">
+                            {item.text}
+                            <br />
+                            <span>
+                              {item.createdAt.split(" ")[3].split(":")[0] > 12
+                                ? item.createdAt.split(" ")[3].split(":")[0] -
+                                  12 +
+                                  ":" +
+                                  item.createdAt.split(" ")[3].split(":")[1] +
+                                  " PM"
+                                : item.createdAt
+                                    .split(" ")[3]
+                                    .split(":")
+                                    .slice(0, 2)
+                                    .join(":") + " AM"}
+                            </span>
+                            <span>
+                              {" - " +
+                                item.createdAt
+                                  .split(" ")
+                                  .slice(1, 3)
+                                  .join(" ") +
+                                " " +
+                                item.createdAt.split(" ")[
+                                  item.createdAt.split(" ").length - 1
+                                ]}
+                            </span>
                           </p>
-                        </div>
-                        <a
-                          href={
-                            "https://twitter.com/" +
-                            item.user.screenName +
-                            "/status/" +
-                            item.idStr
-                          }
-                        >
-                          <i className="fab fa-twitter twittericon" />
-                        </a>
-                        <p className="card-text">
-                          {item.text}
-                          <br />
-                          <span>
-                            {item.createdAt.split(" ")[3].split(":")[0] > 12
-                              ? item.createdAt.split(" ")[3].split(":")[0] -
-                                12 +
-                                ":" +
-                                item.createdAt.split(" ")[3].split(":")[1] +
-                                " PM"
-                              : item.createdAt
-                                  .split(" ")[3]
-                                  .split(":")
-                                  .slice(0, 2)
-                                  .join(":") + " AM"}
-                          </span>
-                          <span>
-                            {" - " +
-                              item.createdAt.split(" ").slice(1, 3).join(" ") +
-                              " " +
-                              item.createdAt.split(" ")[
-                                item.createdAt.split(" ").length - 1
-                              ]}
-                          </span>
-                        </p>
-                        <div className="card-bottom">
-                          <p>
-                            <i className="fas fa-heart" /> {item.favoriteCount}
-                          </p>
+                          <div className="card-bottom">
+                            <p>
+                              <i className="fas fa-heart" />{" "}
+                              {item.favoriteCount}
+                            </p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  }
+                )}
               </div>
             );
           } else if (idx(data, _ => _.descuri.twitter.timelines[0])) {
             return (
               <div>
+                <div className="twitter-back-img">
+                  {idx(
+                    data,
+                    _ =>
+                      _.descuri.twitter.timelines[0].tweets[0].user
+                        .profileUseBackgroundImage
+                  )
+                    ? <img
+                        alt="Twitter Background"
+                        src={idx(
+                          data,
+                          _ =>
+                            _.descuri.twitter.timelines[0].tweets[0].user
+                              .profileBannerUrl
+                        )}
+                      />
+                    : ""}
+                </div>
+                <div className="twitter-back-avatar-container">
+                  <img
+                    alt="Twitter Avatar"
+                    className="twitter-back-avatar"
+                    src={idx(
+                      data,
+                      _ =>
+                        _.descuri.twitter.timelines[0].tweets[0].user
+                          .profileImageUrlHttps
+                    ).replace("_normal", "")}
+                  />
+                </div>
                 {data.descuri.twitter.timelines[0].tweets.map(item => {
                   return (
                     <div className="card">
                       <div className="card-body">
-                        <img src={item.user.profileImageUrlHttps} />
+                        <img
+                          src={item.user.profileImageUrlHttps}
+                          alt="Avatar"
+                        />
                         <div className="names">
                           <h5 className="card-title">
                             <a
@@ -426,8 +497,16 @@ const GET_YoutubeQuery = gql`
         presentations {
           id
           video_url
+          draft {
+            title
+          }
           youtubeVideo {
             id
+            statistics {
+              viewCount
+              dislikeCount
+              likeCount
+            }
           }
         }
       }
@@ -444,6 +523,65 @@ const GET_YoutubeQuery = gql`
     }
   }
 `;
+
+const GET_DescuriYoutubeStats = gql`
+  query($id: String!) {
+    youTubeVideo(id: $id) {
+      statistics {
+        dislikeCount
+        likeCount
+        viewCount
+      }
+      id
+      snippet {
+        title
+      }
+    }
+  }
+`;
+
+class DescuriYoutubeStats extends Component {
+  render() {
+    return (
+      <Query
+        query={GET_DescuriYoutubeStats}
+        variables={{
+          id: this.props.videoId
+        }}
+      >
+        {({ loading, error, data }) => {
+          if (loading) return <div>Loading...</div>;
+          if (error) {
+            console.log(error);
+            return <div>Uh oh, something went wrong!</div>;
+          }
+          return (
+            <div>
+              <p className="video-title">
+                {idx(data, _ => _.youTubeVideo.snippet.title)}
+              </p>
+              <div className="video-stats">
+                <div>
+                  {idx(data, _ => _.youTubeVideo.statistics.viewCount)} views
+                </div>
+                <div className="thumbs">
+                  <div>
+                    <i className="fas fa-thumbs-up" />{" "}
+                    {idx(data, _ => _.youTubeVideo.statistics.likeCount)}
+                  </div>
+                  <div>
+                    <i className="fas fa-thumbs-down" />{" "}
+                    {idx(data, _ => _.youTubeVideo.statistics.dislikeCount)}
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        }}
+      </Query>
+    );
+  }
+}
 
 class YoutubeInfo extends Component {
   render() {
@@ -467,27 +605,50 @@ class YoutubeInfo extends Component {
           let eventil_video = null;
           let descuri_video = null;
           if (idx(data, _ => _.eventil.user.presentations)) {
-            eventil_video = data.eventil.user.presentations.map(item => {
-              return (
-                <div>
-                  {item.youtubeVideo
-                    ? <iframe
-                        src={
-                          "http://www.youtube.com/embed/" + item.youtubeVideo.id
-                        }
-                        width="560"
-                        height="315"
-                      />
-                    : " "}
-                </div>
-              );
-            });
+            eventil_video = data.eventil.user.presentations.map(
+              (item, index) => {
+                return (
+                  <div key={index}>
+                    {item.youtubeVideo
+                      ? <div>
+                          <iframe
+                            src={
+                              "http://www.youtube.com/embed/" +
+                              item.youtubeVideo.id
+                            }
+                            width="560"
+                            height="315"
+                          />
+                          <p className="video-title">
+                            {item.draft.title}
+                          </p>
+                          <div className="video-stats">
+                            <div>
+                              {item.youtubeVideo.statistics.viewCount} views
+                            </div>
+                            <div className="thumbs">
+                              <div>
+                                <i className="fas fa-thumbs-up" />{" "}
+                                {item.youtubeVideo.statistics.likeCount}
+                              </div>
+                              <div>
+                                <i className="fas fa-thumbs-down" />{" "}
+                                {item.youtubeVideo.statistics.dislikeCount}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      : " "}
+                  </div>
+                );
+              }
+            );
           }
           if (idx(data, _ => _.descuri.other)) {
             descuri_video = data.descuri.other.map(item => {
-              return item.descuri.youTube.map(item => {
+              return item.descuri.youTube.map((item, index) => {
                 return (
-                  <div>
+                  <div key={index}>
                     <iframe
                       src={
                         "http://www.youtube.com/embed/" +
@@ -496,6 +657,7 @@ class YoutubeInfo extends Component {
                       width="560"
                       height="315"
                     />
+                    <DescuriYoutubeStats videoId={item.uri.split("v=")[1]} />
                   </div>
                 );
               });
@@ -588,7 +750,10 @@ class GithubInfo extends Component {
                 <div className="row">
                   <div className="col-md-2">
                     <a href={idx(data, _ => _.gitHub.user.url)}>
-                      {" "}<img src={idx(data, _ => _.gitHub.user.avatarUrl)} />
+                      {" "}<img
+                        src={idx(data, _ => _.gitHub.user.avatarUrl)}
+                        alt="GitHub Avatar"
+                      />
                     </a>
                   </div>
                   <div className="col-md-4 user-info">
@@ -614,9 +779,9 @@ class GithubInfo extends Component {
                   {idx(
                     data,
                     _ => _.gitHub.user.repositories.nodes
-                  ).map(item => {
+                  ).map((item, index) => {
                     return (
-                      <div className="col-md-6">
+                      <div className="col-md-6" key={index}>
                         <div className="card">
                           <div className="card-body">
                             <h5 className="card-title">
@@ -741,7 +906,10 @@ class GithubGeneralInfo extends Component {
               <div className="container">
                 <div className="row">
                   <div className="col-md-4">
-                    <img src={idx(data, _ => _.gitHub.user.avatarUrl)} />
+                    <img
+                      src={idx(data, _ => _.gitHub.user.avatarUrl)}
+                      alt="GitHub Avatar"
+                    />
                   </div>
                   <div className="col-md-8">
                     <h4>
@@ -804,7 +972,6 @@ class EventilInfo extends Component {
             console.log(error);
             return <div>Uh oh, something went wrong!</div>;
           }
-          console.log(target);
           if (!idx(data, _ => _.eventil.user.profile)) {
             if (target.gitHub) {
               if (this.props.github) {
@@ -852,13 +1019,15 @@ class EventilInfo extends Component {
           target.gitHub = idx(data, _ => _.eventil.user.profile.github);
           target.twitter = idx(data, _ => _.eventil.user.profile.twitter);
           target.reddit = idx(data, _ => _.eventil.user.profile.reddit);
-          console.log(target);
           return (
             <div>
               <div className="container">
                 <div className="row">
                   <div className="col-md-4">
-                    <img src={idx(data, _ => _.eventil.user.profile.avatar)} />
+                    <img
+                      src={idx(data, _ => _.eventil.user.profile.avatar)}
+                      alt="Eventil Avatar"
+                    />
                   </div>
                   <div className="col-md-8">
                     <h4>
