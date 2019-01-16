@@ -1,5 +1,7 @@
 # OneProfile
 
+A supercharged sleuth in your browser. Given an email or GitHub/Twitter/HackerNews username, it'll track down the social activity of a person you want to know better. Includes GitHub, YouTube, and Twitter!
+
 ## Setup a OneGraph app:
 
 Sign up at https://www.onegraph.com, create an app, and grab its id.
