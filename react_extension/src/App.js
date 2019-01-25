@@ -497,13 +497,13 @@ const GET_YoutubeQuery = gql`
           id
           draft {
             title
-          }
-          youtubeVideo {
-            id
-            statistics {
-              viewCount
-              dislikeCount
-              likeCount
+            youtubeVideo {
+              id
+              statistics {
+                viewCount
+                dislikeCount
+                likeCount
+              }
             }
           }
         }
