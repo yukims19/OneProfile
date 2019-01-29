@@ -8,6 +8,18 @@
   left: 20%;
   position: relative;
 }
+.loaded-content {
+  animation: appear 0.5s;
+}
+@keyframes appear {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
 #general-content .col-md-8 {
   text-align: left;
 }

@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import './App.css';
-import {Tabs, Icon} from 'antd';
+import {Tabs, Icon, Spin} from 'antd';
 import {gql} from 'apollo-boost';
 import {ApolloProvider, Query} from 'react-apollo';
 import OneGraphApolloClient from 'onegraph-apollo-client';
@@ -100,7 +100,7 @@ class DescURI extends Component {
     return (
       <Query query={URL_Query} variables={{URL}}>
         {({loading, error, data}) => {
-          if (loading) return <div>Loading...</div>;
+          if (loading) return <Spin />;
           if (error) {
             console.log(error);
             return <div>Uh oh, something went wrong!</div>;
@@ -257,14 +257,14 @@ class TwitterInfo extends Component {
           URL: URL,
         }}>
         {({loading, error, data}) => {
-          if (loading) return <div>Loading...</div>;
+          if (loading) return <Spin />;
           if (error) {
             console.log(error);
             return <div>Uh oh, something went wrong!</div>;
           }
           if (idx(data, _ => _.eventil.user.profile)) {
             return (
-              <div>
+              <div className="loaded-content">
                 <div className="twitter-back-img">
                   {idx(
                     data,
@@ -550,7 +550,7 @@ class DescuriYoutubeStats extends Component {
             id: this.props.videoId,
           }}>
           {({loading, error, data}) => {
-            if (loading) return <div>Loading...</div>;
+            if (loading) return <Spin />;
             if (error) {
               console.log(error);
               return <div>Uh oh, something went wrong!</div>;
@@ -597,7 +597,7 @@ class YoutubeInfo extends Component {
           URL: URL,
         }}>
         {({loading, error, data}) => {
-          if (loading) return <div>Loading...</div>;
+          if (loading) return <Spin />;
           if (error) {
             console.log(error);
             return <div>Uh oh, something went wrong!</div>;
@@ -668,7 +668,7 @@ class YoutubeInfo extends Component {
           return (
             <div>
               {eventil_video || descuri_video[0][0] ? (
-                <div>
+                <div className="loaded-content">
                   <div>{eventil_video}</div>
                   <div>{descuri_video}</div>
                 </div>
@@ -735,14 +735,14 @@ class GithubInfo extends Component {
     return (
       <Query query={GET_GithubQuery} variables={{github: target.gitHub}}>
         {({loading, error, data}) => {
-          if (loading) return <div>Loading...</div>;
+          if (loading) return <Spin />;
           if (error) {
             console.log(error);
             return <div>Uh oh, something went wrong!</div>;
           }
           if (!idx(data, _ => _.gitHub.user)) return <div>No Data Found</div>;
           return (
-            <div>
+            <div className="loaded-content">
               <div className="container">
                 <div className="row">
                   <div className="col-md-2">
@@ -891,7 +891,7 @@ class GithubGeneralInfo extends Component {
     return (
       <Query query={GET_GithubGeneralQuery} variables={{github: target.gitHub}}>
         {({loading, error, data}) => {
-          if (loading) return <div>Loading...</div>;
+          if (loading) return <Spin />;
           if (error) {
             console.log(error);
             return <div>Uh oh, something went wrong!</div>;
@@ -958,7 +958,7 @@ class EventilInfo extends Component {
           reddit: target.reddit,
         }}>
         {({loading, error, data}) => {
-          if (loading) return <div>Loading...</div>;
+          if (loading) return <Spin />;
           if (error) {
             console.log(error);
             return <div>Uh oh, something went wrong!</div>;
@@ -1016,7 +1016,7 @@ class EventilInfo extends Component {
           target.twitter = idx(data, _ => _.eventil.user.profile.twitter);
           target.reddit = idx(data, _ => _.eventil.user.profile.reddit);
           return (
-            <div>
+            <div className="loaded-content">
               <div className="container">
                 <div className="row">
                   <div className="col-md-4">
